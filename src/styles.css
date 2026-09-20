@@ -70,13 +70,6 @@ body {
   margin-bottom: 1.4rem;
 }
 
-.klanken-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.6rem;
-}
-
 .niveau-toggle {
   display: flex;
   align-items: center;
@@ -183,17 +176,6 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--muted);
-}
-
-@media (max-width: 30rem) {
-  /* "Alles aan"/"Alles uit" passen op een telefoon niet meer naast de
-     titel en wrapten dan naar hun eigen regel — maar zonder eigen volle
-     breedte werd die regel links uitgelijnd i.p.v. rechts. Nu krijgen ze
-     expliciet hun eigen, volle-breedte regel eronder, rechts uitgelijnd. */
-  .klanken-group-kop {
-    flex-direction: column;
-    align-items: stretch;
-  }
 }
 
 .klanken-row {

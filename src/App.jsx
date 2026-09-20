@@ -280,42 +280,41 @@ function OefenResultaat({ aantalJuist, aantalFout, onOpnieuwFout, onTerug }) {
   )
 }
 
-// Eén klankgroep (titel + rij aanvinkbare klanken). "Alles aan/uit" komt
-// enkel mee op de eerste groep; het "enkel eenvoudige woordjes"-effect op
-// de klankknoppen zelf geldt enkel voor de medeklinkerclusters.
-function KlankenGroep({ g, eerste, toonActies, selected, toggle, geenClusters, selectAll, clearAll }) {
+// Eén klankgroep (titel + rij aanvinkbare klanken), met een eigen "Alles"-
+// knopje om enkel de klanken van déze groep te selecteren — globaal
+// "alles uit" gebeurt al via de Reset-knop bij de resultaten, dus een
+// globale "alles aan" is hier bewust niet meer nodig. Bij "enkel eenvoudige
+// woordjes" wordt zowel de klankknoppen als dit "Alles"-knopje van de
+// medeklinkerclusters uitgeschakeld.
+function KlankenGroep({ g, eerste, selected, toggle, geenClusters, selectGroep }) {
+  const uitgeschakeld = geenClusters && g.title === 'Medeklinkerclusters'
   return (
     <div className={eerste ? 'klanken-group is-eerste' : 'klanken-group'}>
       <div className="klanken-group-kop">
         <h2>{g.title}</h2>
-        {toonActies && (
-          <div className="klanken-actions">
-            <button className="btn" onClick={selectAll}>
-              Alles aan
-            </button>
-            <button className="btn btn-quiet" onClick={clearAll}>
-              Alles uit
-            </button>
-          </div>
-        )}
+        <button
+          type="button"
+          className="btn btn-quiet btn-small"
+          onClick={() => selectGroep(g.klanken)}
+          disabled={uitgeschakeld}
+        >
+          Alles
+        </button>
       </div>
       <div className="klanken-row">
-        {g.klanken.map((k) => {
-          const uitgeschakeld = geenClusters && g.title === 'Medeklinkerclusters'
-          return (
-            <button
-              key={k}
-              className={
-                selected.has(k) ? `klank ${GROUP_CLASS[g.title]} is-on` : `klank ${GROUP_CLASS[g.title]}`
-              }
-              onClick={() => toggle(k)}
-              disabled={uitgeschakeld}
-              aria-pressed={selected.has(k)}
-            >
-              {KLANK_LABELS[k] ?? k}
-            </button>
-          )
-        })}
+        {g.klanken.map((k) => (
+          <button
+            key={k}
+            className={
+              selected.has(k) ? `klank ${GROUP_CLASS[g.title]} is-on` : `klank ${GROUP_CLASS[g.title]}`
+            }
+            onClick={() => toggle(k)}
+            disabled={uitgeschakeld}
+            aria-pressed={selected.has(k)}
+          >
+            {KLANK_LABELS[k] ?? k}
+          </button>
+        ))}
       </div>
     </div>
   )
@@ -373,13 +372,9 @@ export default function App() {
       return next
     })
 
-  const selectAll = () => {
-    // "Alles aan" bedoelt ook echt alles, inclusief medeklinkerclusters —
-    // dat staat haaks op "enkel eenvoudige woordjes", dus die zetten we uit
-    // in plaats van de net geselecteerde clusters meteen weer te negeren.
-    setGeenClusters(false)
-    setSelected(new Set(ALL_KLANKEN))
-  }
+  // Voegt enkel de klanken van één groep toe aan de selectie, zonder de rest
+  // te raken — de globale "alles uit" gebeurt al via de Reset-knop hieronder.
+  const selectGroep = (klanken) => setSelected((s) => new Set([...s, ...klanken]))
   const clearAll = () => setSelected(new Set())
 
   const words = useMemo(() => {
@@ -458,22 +453,21 @@ export default function App() {
                 selected,
                 toggle,
                 geenClusters,
-                selectAll,
-                clearAll,
+                selectGroep,
               }
 
               if (g.title === 'Lange klinkers') {
                 return (
                   <div key={g.title} className="klanken-paar">
-                    <KlankenGroep g={g} eerste={false} toonActies={false} {...groepProps} />
-                    <KlankenGroep g={KLINKT_ANDERS_GROEP} eerste={false} toonActies={false} {...groepProps} />
+                    <KlankenGroep g={g} eerste={false} {...groepProps} />
+                    <KlankenGroep g={KLINKT_ANDERS_GROEP} eerste={false} {...groepProps} />
                   </div>
                 )
               }
 
               return (
                 <div key={g.title}>
-                  <KlankenGroep g={g} eerste={i === 0} toonActies={i === 0} {...groepProps} />
+                  <KlankenGroep g={g} eerste={i === 0} {...groepProps} />
 
                   {g.title === 'Medeklinkers' && (
                     <label className="niveau-toggle">
