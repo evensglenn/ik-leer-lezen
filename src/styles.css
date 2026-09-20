@@ -160,17 +160,8 @@ body {
   }
 }
 
-.klanken-group-kop {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-  margin-bottom: 0.5rem;
-}
-
 .klanken-group h2 {
-  margin: 0;
+  margin: 0 0 0.5rem;
   font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -201,6 +192,16 @@ body {
 .klank:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.klank-alles {
+  background: var(--ground);
+  border-style: dashed;
+  border-color: var(--muted);
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .klank.is-on.is-korte-klinker {

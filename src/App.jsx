@@ -290,18 +290,19 @@ function KlankenGroep({ g, eerste, selected, toggle, geenClusters, selectGroep }
   const uitgeschakeld = geenClusters && g.title === 'Medeklinkerclusters'
   return (
     <div className={eerste ? 'klanken-group is-eerste' : 'klanken-group'}>
-      <div className="klanken-group-kop">
-        <h2>{g.title}</h2>
+      <h2>{g.title}</h2>
+      <div className="klanken-row">
+        {/* Zelfde vorm/grootte als een klank-pil, maar duidelijk anders
+            gestyled (gestippelde rand, grijstint) zodat hij niet aanvoelt
+            als een extra (onbestaande) klank om aan te vinken. */}
         <button
           type="button"
-          className="btn btn-quiet btn-small"
+          className="klank klank-alles"
           onClick={() => selectGroep(g.klanken)}
           disabled={uitgeschakeld}
         >
           Alles
         </button>
-      </div>
-      <div className="klanken-row">
         {g.klanken.map((k) => (
           <button
             key={k}
