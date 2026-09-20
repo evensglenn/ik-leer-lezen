@@ -185,6 +185,17 @@ body {
   color: var(--muted);
 }
 
+@media (max-width: 30rem) {
+  /* "Alles aan"/"Alles uit" passen op een telefoon niet meer naast de
+     titel en wrapten dan naar hun eigen regel — maar zonder eigen volle
+     breedte werd die regel links uitgelijnd i.p.v. rechts. Nu krijgen ze
+     expliciet hun eigen, volle-breedte regel eronder, rechts uitgelijnd. */
+  .klanken-group-kop {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 .klanken-row {
   display: flex;
   flex-wrap: wrap;
