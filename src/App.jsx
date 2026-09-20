@@ -316,11 +316,6 @@ export default function App() {
       .sort((a, b) => a.word.length - b.word.length || a.word.localeCompare(b.word, 'nl'))
   }, [selected, geenClusters])
 
-  const geselecteerdeKlanken = useMemo(
-    () => [...selected].sort((a, b) => a.localeCompare(b, 'nl')),
-    [selected],
-  )
-
   const oefenOpties = useMemo(() => {
     const hoogsteTrap = OEFEN_AANTALLEN[OEFEN_AANTALLEN.length - 1]
     const opties = OEFEN_AANTALLEN.filter((n) => n < words.length)
@@ -380,13 +375,16 @@ export default function App() {
       ) : (
         <>
           <section className="klanken-picker">
-            <div className="klanken-actions">
-              <button className="btn" onClick={selectAll}>
-                Alles aan
-              </button>
-              <button className="btn btn-quiet" onClick={clearAll}>
-                Alles uit
-              </button>
+            <div className="klanken-picker-header">
+              <h2 className="klanken-picker-title">Klanken</h2>
+              <div className="klanken-actions">
+                <button className="btn" onClick={selectAll}>
+                  Alles aan
+                </button>
+                <button className="btn btn-quiet" onClick={clearAll}>
+                  Alles uit
+                </button>
+              </div>
             </div>
 
             {KLANKEN_GROUPS.map((g) => (
@@ -426,24 +424,6 @@ export default function App() {
               </div>
             ))}
           </section>
-
-          {selected.size > 0 && (
-            <div className="selection-summary" aria-live="polite">
-              <div className="selection-summary__label">
-                Geselecteerd ({selected.size})
-              </div>
-              <div className="selection-summary__chips">
-                {geselecteerdeKlanken.slice(0, 8).map((klank) => (
-                  <span key={klank} className="selection-summary__chip">
-                    {KLANK_LABELS[klank] ?? klank}
-                  </span>
-                ))}
-                {geselecteerdeKlanken.length > 8 && (
-                  <span className="selection-summary__more">+{geselecteerdeKlanken.length - 8}</span>
-                )}
-              </div>
-            </div>
-          )}
 
           <section className="results">
             <div className="results-header">
