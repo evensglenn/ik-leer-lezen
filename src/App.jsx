@@ -13,9 +13,12 @@ const GROUP_CLASS = {
   Medeklinkerclusters: 'is-cluster',
 }
 
-// Aantallen die aangeboden worden om 1 voor 1 te oefenen — altijd aangevuld
-// met "alle woorden die er nu zijn", zelfs als dat er minder dan 10 zijn.
-const OEFEN_AANTALLEN = [10, 20, 50]
+// Aantallen die aangeboden worden om 1 voor 1 te oefenen. Bij een kleine
+// woordenlijst wordt dit aangevuld met "alle woorden die er nu zijn"; bij
+// een grote lijst (bv. alle klanken aan) is honderd al meer dan genoeg voor
+// één oefensessie, dus dan blijft de hoogste optie op 100 staan in plaats
+// van "alle 1240".
+const OEFEN_AANTALLEN = [10, 20, 50, 100]
 
 // Hoeveel pixels er gesleept moet worden voordat een sleep als "geveegd"
 // telt in plaats van terug te veren naar het midden.
@@ -276,8 +279,9 @@ export default function App() {
   )
 
   const oefenOpties = useMemo(() => {
+    const hoogsteTrap = OEFEN_AANTALLEN[OEFEN_AANTALLEN.length - 1]
     const opties = OEFEN_AANTALLEN.filter((n) => n < words.length)
-    opties.push(words.length)
+    if (words.length <= hoogsteTrap) opties.push(words.length)
     return opties
   }, [words])
 
