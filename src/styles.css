@@ -287,6 +287,30 @@ body {
   padding: 2.4rem 1rem 1rem;
 }
 
+.oefenen-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 24rem;
+}
+
+.oefenen-progress {
+  width: 100%;
+  height: 0.5rem;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.oefenen-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cluster), var(--medeklinker));
+  border-radius: inherit;
+  transition: width 320ms ease;
+}
+
 .oefenen-voortgang {
   margin: 0;
   font-size: 1.1rem;
@@ -398,6 +422,18 @@ body {
   margin: 0;
   font-size: 1.8rem;
   color: var(--medeklinker);
+}
+
+.resultaat-emoji {
+  font-size: 3.4rem;
+  line-height: 1;
+}
+
+.resultaat-score {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--ink);
 }
 
 .oefenen-telling {

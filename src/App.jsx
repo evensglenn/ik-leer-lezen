@@ -150,9 +150,14 @@ function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
 
   return (
     <section className="oefenen">
-      <p className="oefenen-voortgang">
-        {index + 1} / {totaal}
-      </p>
+      <div className="oefenen-header">
+        <div className="oefenen-progress">
+          <div className="oefenen-progress-bar" style={{ width: `${(index / totaal) * 100}%` }} />
+        </div>
+        <p className="oefenen-voortgang">
+          {index + 1} / {totaal}
+        </p>
+      </div>
 
       <OefenKaart
         key={index}
@@ -194,10 +199,27 @@ function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
   )
 }
 
+// Toont niet alleen de kale cijfers, maar ook een boodschap die meeschaalt
+// met de score — voelt voor een kind belonender aan dan enkel een telling.
+function resultaatBeoordeling(percentage) {
+  if (percentage === 100) return { emoji: '🎉', boodschap: 'Perfect!' }
+  if (percentage >= 80) return { emoji: '👏', boodschap: 'Heel goed gedaan!' }
+  if (percentage >= 50) return { emoji: '💪', boodschap: 'Goed geoefend!' }
+  return { emoji: '🌱', boodschap: 'Blijven oefenen, dat lukt zo!' }
+}
+
 function OefenResultaat({ aantalJuist, aantalFout, onOpnieuwFout, onTerug }) {
+  const totaal = aantalJuist + aantalFout
+  const percentage = totaal > 0 ? Math.round((aantalJuist / totaal) * 100) : 0
+  const { emoji, boodschap } = resultaatBeoordeling(percentage)
+
   return (
     <section className="oefenen oefenen-resultaat">
-      <h2>Klaar!</h2>
+      <span className="resultaat-emoji" aria-hidden="true">
+        {emoji}
+      </span>
+      <h2>{boodschap}</h2>
+      <p className="resultaat-score">{percentage}%</p>
       <p className="oefenen-telling">
         <span className="is-juist">{aantalJuist} juist</span>
         <span className="telling-scheiding">·</span>
@@ -345,7 +367,9 @@ export default function App() {
 
           {selected.size > 0 && (
             <div className="selection-summary" aria-live="polite">
-              <div className="selection-summary__label">Geselecteerd</div>
+              <div className="selection-summary__label">
+                Geselecteerd ({selected.size})
+              </div>
               <div className="selection-summary__chips">
                 {geselecteerdeKlanken.slice(0, 8).map((klank) => (
                   <span key={klank} className="selection-summary__chip">
