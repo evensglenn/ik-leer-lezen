@@ -452,16 +452,43 @@ body {
   color: var(--line);
 }
 
+.word-list-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+}
+
 .word-list {
   display: flex;
   gap: 0.7rem;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  -webkit-overflow-scrolling: touch;
+  width: max-content;
   list-style: none;
   margin: 0;
   padding: 0.2rem 0.2rem 0.7rem;
+  animation-name: word-list-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.word-list-marquee:hover .word-list,
+.word-list-marquee:focus-within .word-list {
+  animation-play-state: paused;
+}
+
+@keyframes word-list-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-list {
+    animation: none;
+    overflow-x: auto;
+  }
 }
 
 .word-card {
@@ -470,7 +497,6 @@ body {
   align-items: baseline;
   flex: 0 0 auto;
   min-width: 6.5rem;
-  scroll-snap-align: start;
   padding: 0.9rem 1rem;
   background: var(--paper);
   border-radius: var(--radius);

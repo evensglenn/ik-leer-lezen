@@ -418,13 +418,24 @@ export default function App() {
               </div>
             )}
 
-            <ul className="word-list">
-              {words.map(({ word, klanken }) => (
-                <li key={word} className="word-card">
-                  <KlankenWoord klanken={klanken} />
-                </li>
-              ))}
-            </ul>
+            {words.length > 0 && (
+              <div className="word-list-marquee">
+                <ul
+                  className="word-list"
+                  style={{ animationDuration: `${Math.max(words.length * 2, 15)}s` }}
+                >
+                  {/* Lijst wordt verdubbeld zodat de animatie naadloos in een lus
+                      kan lopen: op de helft (-50%) staat de kopie exact op de
+                      plek van het origineel. De kopie is aria-hidden zodat een
+                      schermlezer de woorden niet dubbel voorleest. */}
+                  {[...words, ...words].map(({ word, klanken }, i) => (
+                    <li key={`${word}-${i}`} className="word-card" aria-hidden={i >= words.length}>
+                      <KlankenWoord klanken={klanken} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </section>
         </>
       )}
