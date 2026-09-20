@@ -35,9 +35,23 @@ function shuffle(lijst) {
   return kopie
 }
 
-function KlankenWoord({ klanken, wit }) {
+// In de woordenlijst kleuren de klanken om de opbouw te tonen; tijdens het
+// oefenen (eenKleur) is dat net niet de bedoeling — daar lees je het woord
+// gewoon zoals het is, zonder kleurhints.
+function KlankenWoord({ klanken, wit, eenKleur }) {
   return klanken.map(({ tekst }, i) => (
-    <span key={i} className={wit ? 'klank-part is-wit' : i % 2 === 0 ? 'klank-part' : 'klank-part is-alt'}>
+    <span
+      key={i}
+      className={
+        wit
+          ? 'klank-part is-wit'
+          : eenKleur
+            ? 'klank-part is-enkel'
+            : i % 2 === 0
+              ? 'klank-part'
+              : 'klank-part is-alt'
+      }
+    >
       {tekst}
     </span>
   ))
@@ -99,7 +113,7 @@ function OefenKaart({ klanken, onOordeel }) {
         onPointerCancel={pointerUp}
       >
         <span className="oefenen-woord">
-          <KlankenWoord klanken={klanken} wit={isGetint} />
+          <KlankenWoord klanken={klanken} wit={isGetint} eenKleur />
         </span>
         {richting && (
           <span className="oefenen-icoon" style={{ opacity: voortgang * 0.5 }} aria-hidden="true">

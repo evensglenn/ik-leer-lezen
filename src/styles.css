@@ -276,6 +276,10 @@ body {
   color: #fff;
 }
 
+.klank-part.is-enkel {
+  color: var(--ink);
+}
+
 .oefenen-hint {
   margin: 0;
   font-size: 0.9rem;
