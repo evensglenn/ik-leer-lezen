@@ -200,8 +200,6 @@ body {
   border-color: var(--muted);
   color: var(--muted);
   font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
 }
 
 .klank.is-on.is-korte-klinker {

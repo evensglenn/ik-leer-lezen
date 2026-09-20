@@ -301,7 +301,7 @@ function KlankenGroep({ g, eerste, selected, toggle, geenClusters, selectGroep }
           onClick={() => selectGroep(g.klanken)}
           disabled={uitgeschakeld}
         >
-          Alles
+          alle
         </button>
         {g.klanken.map((k) => (
           <button
