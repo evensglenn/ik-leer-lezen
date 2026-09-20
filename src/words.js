@@ -130,7 +130,7 @@ const RUWE_WOORDEN = [
   'el', 'ek', 'ben', 'den', 'hen', 'ken', 'wen', 'ren', 'men', 'bel', 'fel', 'zet',
 
   // (i)
-  'ik', 'lik', 'pik', 'tik', 'mik', 'kik', 'mil', 'prik', 'strik', 'klik', 'min', 'vin',
+  'ik', 'lik', 'pik', 'tik', 'mik', 'kik', 'mil', 'prik', 'strik', 'klik', 'klink', 'min', 'vin',
   'zit', 'pit', 'lid',
 
   // (o)
