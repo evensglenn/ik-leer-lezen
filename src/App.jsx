@@ -4,6 +4,7 @@ import { WOORDEN } from './words.js'
 import { version as APP_VERSION } from '../package.json'
 
 const ALL_KLANKEN = KLANKEN_GROUPS.flatMap((g) => g.klanken)
+const MEDEKLINKERCLUSTER_KLANKEN = KLANKEN_GROUPS.find((g) => g.title === 'Medeklinkerclusters').klanken
 
 // Zodat een pagina-refresh niet de hele klankenselectie wist.
 const KLANKEN_OPSLAG_SLEUTEL = 'ik-leer-lezen:geselecteerde-klanken'
@@ -308,6 +309,19 @@ export default function App() {
     }
   }, [geenClusters])
 
+  // Medeklinkerclusters (ch, ng, nk, sch) horen niet bij "eenvoudige
+  // woordjes" — zodra die stand aan gaat (of al aan staat bij het opstarten,
+  // door de opgeslagen voorkeur), mogen ze niet meer aangevinkt blijven.
+  useEffect(() => {
+    if (!geenClusters) return
+    setSelected((s) => {
+      if (!MEDEKLINKERCLUSTER_KLANKEN.some((k) => s.has(k))) return s
+      const next = new Set(s)
+      for (const k of MEDEKLINKERCLUSTER_KLANKEN) next.delete(k)
+      return next
+    })
+  }, [geenClusters])
+
   const toggle = (k) =>
     setSelected((s) => {
       const next = new Set(s)
@@ -403,20 +417,24 @@ export default function App() {
                     )}
                   </div>
                   <div className="klanken-row">
-                    {g.klanken.map((k) => (
-                      <button
-                        key={k}
-                        className={
-                          selected.has(k)
-                            ? `klank ${GROUP_CLASS[g.title]} is-on`
-                            : `klank ${GROUP_CLASS[g.title]}`
-                        }
-                        onClick={() => toggle(k)}
-                        aria-pressed={selected.has(k)}
-                      >
-                        {KLANK_LABELS[k] ?? k}
-                      </button>
-                    ))}
+                    {g.klanken.map((k) => {
+                      const uitgeschakeld = geenClusters && g.title === 'Medeklinkerclusters'
+                      return (
+                        <button
+                          key={k}
+                          className={
+                            selected.has(k)
+                              ? `klank ${GROUP_CLASS[g.title]} is-on`
+                              : `klank ${GROUP_CLASS[g.title]}`
+                          }
+                          onClick={() => toggle(k)}
+                          disabled={uitgeschakeld}
+                          aria-pressed={selected.has(k)}
+                        >
+                          {KLANK_LABELS[k] ?? k}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
 

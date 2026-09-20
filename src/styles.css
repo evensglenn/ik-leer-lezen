@@ -190,6 +190,11 @@ body {
   cursor: pointer;
 }
 
+.klank:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .klank.is-on.is-korte-klinker {
   background: var(--korte-klinker);
   border-color: var(--korte-klinker);
