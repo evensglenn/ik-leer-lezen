@@ -247,7 +247,7 @@ body {
   touch-action: pan-y;
   user-select: none;
   cursor: grab;
-  transition: transform 200ms ease;
+  transition: transform 200ms ease, background-color 200ms ease;
 }
 
 .oefenen-kaart.is-slepen {
@@ -255,29 +255,25 @@ body {
   cursor: grabbing;
 }
 
-.stempel {
+.oefenen-woord {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.oefenen-icoon {
   position: absolute;
-  top: 0.9rem;
-  padding: 0.3rem 0.9rem;
-  border: 3px solid currentColor;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 7rem;
+  line-height: 1;
+  color: #fff;
   pointer-events: none;
 }
 
-.stempel-juist {
-  left: 0.9rem;
-  color: var(--juist);
-  transform: rotate(-12deg);
-}
-
-.stempel-fout {
-  right: 0.9rem;
-  color: var(--fout);
-  transform: rotate(12deg);
+.klank-part.is-wit {
+  color: #fff;
 }
 
 .oefenen-hint {
@@ -403,8 +399,15 @@ body {
   }
 
   .oefenen-kaart {
-    font-size: 2.4rem;
     padding: 1.8rem 1rem;
+  }
+
+  .oefenen-kaart {
+    font-size: 2.4rem;
+  }
+
+  .oefenen-icoon {
+    font-size: 4.6rem;
   }
 
   .oefenen-knoppen .btn {

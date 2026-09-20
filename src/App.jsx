@@ -21,6 +21,11 @@ const OEFEN_AANTALLEN = [10, 20, 50]
 // telt in plaats van terug te veren naar het midden.
 const SWIPE_DREMPEL = 80
 
+const WIT = [255, 255, 255]
+const GROEN = [26, 158, 92]
+const ROOD = [209, 51, 44]
+const meng = (van, naar, t) => van.map((c, i) => Math.round(c + (naar[i] - c) * t))
+
 function shuffle(lijst) {
   const kopie = [...lijst]
   for (let i = kopie.length - 1; i > 0; i--) {
@@ -30,9 +35,9 @@ function shuffle(lijst) {
   return kopie
 }
 
-function KlankenWoord({ klanken }) {
+function KlankenWoord({ klanken, wit }) {
   return klanken.map(({ tekst }, i) => (
-    <span key={i} className={i % 2 === 0 ? 'klank-part' : 'klank-part is-alt'}>
+    <span key={i} className={wit ? 'klank-part is-wit' : i % 2 === 0 ? 'klank-part' : 'klank-part is-alt'}>
       {tekst}
     </span>
   ))
@@ -40,7 +45,9 @@ function KlankenWoord({ klanken }) {
 
 // Eén kaartje: kan met de vinger/muis naar rechts (juist) of links (fout)
 // geveegd worden, of via de knoppen onderaan bevestigd worden — allebei
-// roepen dezelfde onOordeel("juist" | "fout") aan.
+// roepen dezelfde onOordeel("juist" | "fout") aan. Tijdens het slepen kleurt
+// de hele kaart mee en verschijnt er een groot vinkje/kruisje, zodat het
+// oordeel ook op een boogje van een tablet meteen duidelijk is.
 function OefenKaart({ klanken, onOordeel }) {
   const [sleep, setSleep] = useState({ x: 0, actief: false })
   const startX = useRef(0)
@@ -73,26 +80,32 @@ function OefenKaart({ klanken, onOordeel }) {
   }
 
   const rotatie = Math.max(-12, Math.min(12, sleep.x / 12))
-  const stampJuist = Math.min(Math.max(sleep.x / SWIPE_DREMPEL, 0), 1)
-  const stampFout = Math.min(Math.max(-sleep.x / SWIPE_DREMPEL, 0), 1)
+  const voortgang = Math.min(Math.abs(sleep.x) / SWIPE_DREMPEL, 1)
+  const richting = sleep.x > 8 ? 'juist' : sleep.x < -8 ? 'fout' : null
+  const achtergrond = richting ? meng(WIT, richting === 'juist' ? GROEN : ROOD, voortgang) : WIT
+  const isGetint = voortgang > 0.15
 
   return (
     <div className="oefenen-kaart-wrap">
       <div
         className={sleep.actief ? 'oefenen-kaart is-slepen' : 'oefenen-kaart'}
-        style={{ transform: `translateX(${sleep.x}px) rotate(${rotatie}deg)` }}
+        style={{
+          transform: `translateX(${sleep.x}px) rotate(${rotatie}deg)`,
+          backgroundColor: `rgb(${achtergrond.join(',')})`,
+        }}
         onPointerDown={pointerDown}
         onPointerMove={pointerMove}
         onPointerUp={pointerUp}
         onPointerCancel={pointerUp}
       >
-        <KlankenWoord klanken={klanken} />
-        <span className="stempel stempel-juist" style={{ opacity: stampJuist }}>
-          juist
+        <span className="oefenen-woord">
+          <KlankenWoord klanken={klanken} wit={isGetint} />
         </span>
-        <span className="stempel stempel-fout" style={{ opacity: stampFout }}>
-          fout
-        </span>
+        {richting && (
+          <span className="oefenen-icoon" style={{ opacity: voortgang * 0.5 }} aria-hidden="true">
+            {richting === 'juist' ? '✓' : '✗'}
+          </span>
+        )}
       </div>
     </div>
   )

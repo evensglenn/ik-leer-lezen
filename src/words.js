@@ -63,7 +63,7 @@ const RUWE_WOORDEN = [
   // Klank ch / ng / nk / sch (extra oefenwoorden)
   'nacht', 'licht', 'dicht', 'zacht', 'lachen', 'acht', 'ring', 'tong', 'jong',
   'long', 'vinger', 'koning', 'eng', 'streng', 'zingen', 'bank', 'tank', 'dank',
-  'wenk', 'pink', 'link', 'klank', 'school', 'schaap', 'schoen', 'schaal', 'schip',
+  'wenk', 'pink', 'link', 'klank', 'klak', 'school', 'schaap', 'schoen', 'schaal', 'schip',
   'schrik', 'schuur',
 
   // Nog wat losse, veelgebruikte korte woordjes
@@ -107,6 +107,11 @@ const RUWE_WOORDEN = [
   // Voornaamwoorden — komen in bijna elke zin voor
   'jij', 'hij', 'zij', 'wij', 'ze', 'we', 'jullie', 'mijn', 'jouw', 'zijn',
   'ons', 'deze', 'dit',
+
+  // Meervoud op "-en" — mooie extra oefening voor de "e (u)"-klank
+  'katten', 'honden', 'vissen', 'konijnen', 'kippen', 'eenden', 'schapen',
+  'muizen', 'beren', 'geiten', 'bomen', 'dozen', 'potten', 'bedden', 'messen',
+  'pennen', 'ballen', 'poppen',
 ]
 
 // Sommige woorden passen thematisch in meerdere lijstjes hierboven (bv. "bij"
