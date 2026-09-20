@@ -81,6 +81,31 @@ const RUWE_WOORDEN = [
 
   // Extra, om ook de zeldzamere klanken (ooi, oei, ieuw, q, x) te oefenen
   'mooi', 'kooi', 'boei', 'nieuw', 'quiz', 'taxi', 'vuur', 'uur', 'duur',
+
+  // Rijtjes van korte woordjes per klankfamilie (a), zodat er van élke
+  // combinatie veel te lezen valt, niet enkel losse thema-woorden.
+  'mat', 'rat', 'lat', 'man', 'kan', 'pan', 'ban', 'dan', 'plan', 'bak', 'zak',
+  'vak', 'hak', 'kak', 'lak', 'pak', 'jak', 'dal', 'hal', 'mal', 'pal', 'tal',
+  'wal', 'zal', 'kap', 'lap', 'rap', 'tap', 'dam', 'ram', 'tam', 'gas', 'kas',
+  'was', 'pad', 'rad', 'laf',
+
+  // (e)
+  'ben', 'den', 'hen', 'ken', 'wen', 'ren', 'men', 'bel', 'fel', 'zet',
+
+  // (i)
+  'ik', 'lik', 'pik', 'tik', 'mik', 'prik', 'strik', 'klik', 'min', 'vin',
+  'zit', 'pit', 'lid',
+
+  // (o)
+  'kok', 'bok', 'dok', 'hok', 'lok', 'mok', 'rok', 'kon', 'ton', 'kop', 'stop',
+  'mos', 'pot', 'tot',
+
+  // (u)
+  'duf', 'stuk', 'trek', 'vlak', 'vlek', 'krap', 'plak',
+
+  // Voornaamwoorden — komen in bijna elke zin voor
+  'jij', 'hij', 'zij', 'wij', 'ze', 'we', 'jullie', 'mijn', 'jouw', 'zijn',
+  'ons', 'deze', 'dit',
 ]
 
 // Sommige woorden passen thematisch in meerdere lijstjes hierboven (bv. "bij"
