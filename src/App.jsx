@@ -116,7 +116,7 @@ export default function App() {
     <div className="shell">
       <header className="top">
         <h1>Ik leer lezen</h1>
-        <p className="subtitle">Kies klanken, vind woordjes om samen te lezen.</p>
+        <p className="subtitle">Kies klanken &amp; vind woordjes om samen te lezen.</p>
       </header>
 
       {oefenReeks ? (

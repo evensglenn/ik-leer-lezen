@@ -34,6 +34,18 @@ body {
   padding: 1.2rem 1rem 3rem;
 }
 
+@media (min-width: 48rem) {
+  .shell {
+    max-width: 64rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .word-list {
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  }
+}
+
 .top {
   text-align: center;
   margin-bottom: 1.4rem;

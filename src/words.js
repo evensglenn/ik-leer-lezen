@@ -35,7 +35,7 @@ const RUWE_WOORDEN = [
 
   // Familie
   'mama', 'papa', 'oma', 'opa', 'broer', 'zus', 'baby', 'tante', 'oom', 'neef',
-  'nicht', 'kind',
+  'nicht', 'kind', 'seppe',
 
   // Kleuren
   'rood', 'blauw', 'groen', 'geel', 'wit', 'zwart', 'bruin', 'roze', 'grijs', 'paars',
@@ -84,22 +84,22 @@ const RUWE_WOORDEN = [
 
   // Rijtjes van korte woordjes per klankfamilie (a), zodat er van élke
   // combinatie veel te lezen valt, niet enkel losse thema-woorden.
-  'an', 'mat', 'rat', 'lat', 'man', 'kan', 'pan', 'ban', 'dan', 'plan', 'bak',
-  'zak', 'vak', 'hak', 'kak', 'lak', 'pak', 'jak', 'dal', 'hal', 'mal', 'pal',
-  'tal', 'wal', 'zal', 'kap', 'lap', 'rap', 'tap', 'dam', 'ram', 'tam', 'gas',
-  'kas', 'was', 'pad', 'rad', 'laf',
+  'an', 'al', 'ak', 'mat', 'rat', 'lat', 'man', 'kan', 'pan', 'ban', 'dan',
+  'plan', 'bak', 'zak', 'vak', 'hak', 'kak', 'lak', 'pak', 'jak', 'dal', 'hal',
+  'mal', 'pal', 'tal', 'wal', 'zal', 'kap', 'lap', 'rap', 'tap', 'dam', 'ram',
+  'tam', 'gas', 'kas', 'was', 'pad', 'rad', 'laf',
 
   // (e)
-  'el', 'ben', 'den', 'hen', 'ken', 'wen', 'ren', 'men', 'bel', 'fel', 'zet',
+  'el', 'ek', 'ben', 'den', 'hen', 'ken', 'wen', 'ren', 'men', 'bel', 'fel', 'zet',
 
   // (i)
   'ik', 'lik', 'pik', 'tik', 'mik', 'kik', 'prik', 'strik', 'klik', 'min', 'vin',
   'zit', 'pit', 'lid',
 
   // (o)
-  'kok', 'bok', 'dok', 'hok', 'lok', 'mok', 'rok', 'nok', 'jok', 'brok', 'kon',
-  'ton', 'kop', 'stop', 'mos', 'pot', 'tot', 'bol', 'dol', 'hol', 'mol', 'wol',
-  'dom', 'log',
+  'on', 'ok', 'kok', 'bok', 'dok', 'hok', 'lok', 'mok', 'rok', 'nok', 'jok',
+  'brok', 'kon', 'ton', 'kop', 'stop', 'mos', 'pot', 'tot', 'bol', 'dol', 'hol',
+  'mol', 'wol', 'dom', 'log',
 
   // (u)
   'duf', 'stuk', 'trek', 'vlak', 'vlek', 'krap', 'plak', 'geluk',
