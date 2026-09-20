@@ -72,9 +72,9 @@ body {
 
 .klanken-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.6rem;
-  margin-bottom: 1rem;
 }
 
 .niveau-toggle {
@@ -152,8 +152,17 @@ body {
   margin-top: 0;
 }
 
+.klanken-group-kop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
 .klanken-group h2 {
-  margin: 0 0 0.5rem;
+  margin: 0;
   font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;

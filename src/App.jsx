@@ -375,19 +375,22 @@ export default function App() {
       ) : (
         <>
           <section className="klanken-picker">
-            <div className="klanken-actions">
-              <button className="btn" onClick={selectAll}>
-                Alles aan
-              </button>
-              <button className="btn btn-quiet" onClick={clearAll}>
-                Alles uit
-              </button>
-            </div>
-
             {KLANKEN_GROUPS.map((g, i) => (
               <div key={g.title}>
                 <div className={i === 0 ? 'klanken-group is-eerste' : 'klanken-group'}>
-                  <h2>{g.title}</h2>
+                  <div className="klanken-group-kop">
+                    <h2>{g.title}</h2>
+                    {i === 0 && (
+                      <div className="klanken-actions">
+                        <button className="btn" onClick={selectAll}>
+                          Alles aan
+                        </button>
+                        <button className="btn btn-quiet" onClick={clearAll}>
+                          Alles uit
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   <div className="klanken-row">
                     {g.klanken.map((k) => (
                       <button
