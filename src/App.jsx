@@ -375,16 +375,13 @@ export default function App() {
       ) : (
         <>
           <section className="klanken-picker">
-            <div className="klanken-picker-header">
-              <h2 className="klanken-picker-title">Klanken</h2>
-              <div className="klanken-actions">
-                <button className="btn" onClick={selectAll}>
-                  Alles aan
-                </button>
-                <button className="btn btn-quiet" onClick={clearAll}>
-                  Alles uit
-                </button>
-              </div>
+            <div className="klanken-actions">
+              <button className="btn" onClick={selectAll}>
+                Alles aan
+              </button>
+              <button className="btn btn-quiet" onClick={clearAll}>
+                Alles uit
+              </button>
             </div>
 
             {KLANKEN_GROUPS.map((g) => (

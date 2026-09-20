@@ -70,24 +70,11 @@ body {
   margin-bottom: 1.4rem;
 }
 
-.klanken-picker-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.8rem;
-  margin-bottom: 1rem;
-}
-
-.klanken-picker-title {
-  margin: 0;
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--muted);
-}
-
 .klanken-actions {
   display: flex;
+  justify-content: flex-end;
   gap: 0.6rem;
+  margin-bottom: 1rem;
 }
 
 .niveau-toggle {
