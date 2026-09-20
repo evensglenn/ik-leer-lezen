@@ -538,14 +538,21 @@ body {
   bottom: 1.2rem;
   transform: translateX(-50%);
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem 0.8rem;
+  max-width: calc(100vw - 2rem);
   padding: 0.8rem 1rem;
   background: var(--ink);
   color: var(--paper);
   border-radius: 999px;
   box-shadow: 0 8px 24px rgba(27, 39, 51, 0.3);
   font-weight: 600;
+}
+
+.update-toast span {
+  white-space: nowrap;
 }
 
 @media (max-width: 26rem) {
