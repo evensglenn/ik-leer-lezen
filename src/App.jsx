@@ -4,6 +4,19 @@ import { WOORDEN } from './words.js'
 import { version as APP_VERSION } from '../package.json'
 
 const ALL_KLANKEN = KLANKEN_GROUPS.flatMap((g) => g.klanken)
+
+// Zodat een pagina-refresh niet de hele klankenselectie wist.
+const KLANKEN_OPSLAG_SLEUTEL = 'ik-leer-lezen:geselecteerde-klanken'
+
+function laadOpgeslagenKlanken() {
+  try {
+    const ruw = localStorage.getItem(KLANKEN_OPSLAG_SLEUTEL)
+    const lijst = ruw ? JSON.parse(ruw) : []
+    return new Set(Array.isArray(lijst) ? lijst.filter((k) => ALL_KLANKEN.includes(k)) : [])
+  } catch {
+    return new Set()
+  }
+}
 const GROUP_CLASS = {
   'Korte klinkers': 'is-korte-klinker',
   'Lange klinkers': 'is-lange-klinker',
@@ -242,7 +255,7 @@ function OefenResultaat({ aantalJuist, aantalFout, onOpnieuwFout, onTerug }) {
 }
 
 export default function App() {
-  const [selected, setSelected] = useState(() => new Set())
+  const [selected, setSelected] = useState(laadOpgeslagenKlanken)
   const [updateAvailable, setUpdateAvailable] = useState(false)
   const [oefenReeks, setOefenReeks] = useState(null)
   const [oefenOordelen, setOefenOordelen] = useState([])
@@ -254,6 +267,14 @@ export default function App() {
     window.addEventListener('lezen:update-available', onUpdate)
     return () => window.removeEventListener('lezen:update-available', onUpdate)
   }, [])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(KLANKEN_OPSLAG_SLEUTEL, JSON.stringify([...selected]))
+    } catch {
+      // localStorage niet beschikbaar (bv. privénavigatie) — negeer stilzwijgend
+    }
+  }, [selected])
 
   const toggle = (k) =>
     setSelected((s) => {
