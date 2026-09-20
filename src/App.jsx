@@ -384,9 +384,9 @@ export default function App() {
               </button>
             </div>
 
-            {KLANKEN_GROUPS.map((g) => (
+            {KLANKEN_GROUPS.map((g, i) => (
               <div key={g.title}>
-                <div className="klanken-group">
+                <div className={i === 0 ? 'klanken-group is-eerste' : 'klanken-group'}>
                   <h2>{g.title}</h2>
                   <div className="klanken-row">
                     {g.klanken.map((k) => (
