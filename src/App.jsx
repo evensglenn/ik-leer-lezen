@@ -62,10 +62,14 @@ function KlankenWoord({ klanken, wit, eenKleur }) {
 // roepen dezelfde onOordeel("juist" | "fout") aan. Tijdens het slepen kleurt
 // de hele kaart mee en verschijnt er een groot vinkje/kruisje, zodat het
 // oordeel ook op een boogje van een tablet meteen duidelijk is.
-function OefenKaart({ klanken, onOordeel }) {
+function OefenKaart({ klanken, onOordeel, triggerOordeel }) {
   const [sleep, setSleep] = useState({ x: 0, actief: false })
   const startX = useRef(0)
   const vertrokken = useRef(false)
+
+  useEffect(() => {
+    if (triggerOordeel) vliegWeg(triggerOordeel)
+  }, [triggerOordeel])
 
   const pointerDown = (e) => {
     startX.current = e.clientX
@@ -126,13 +130,28 @@ function OefenKaart({ klanken, onOordeel }) {
 }
 
 function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
+  const [kaartOordeel, setKaartOordeel] = useState(null)
+
+  useEffect(() => {
+    setKaartOordeel(null)
+  }, [index])
+
+  const handleKaartOordeel = (uitkomst) => {
+    setKaartOordeel(uitkomst)
+  }
+
   return (
     <section className="oefenen">
       <p className="oefenen-voortgang">
         {index + 1} / {totaal}
       </p>
 
-      <OefenKaart key={index} klanken={woord.klanken} onOordeel={onOordeel} />
+      <OefenKaart
+        key={index}
+        klanken={woord.klanken}
+        onOordeel={onOordeel}
+        triggerOordeel={kaartOordeel}
+      />
 
       <p className="oefenen-hint">Veeg naar rechts = juist, naar links = fout</p>
 
@@ -140,10 +159,10 @@ function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
         <button className="btn btn-quiet" onClick={onVorige} disabled={index === 0}>
           Vorige
         </button>
-        <button className="btn btn-fout" onClick={() => onOordeel('fout')}>
+        <button className="btn btn-fout" onClick={() => handleKaartOordeel('fout')}>
           ✗ Fout
         </button>
-        <button className="btn btn-juist" onClick={() => onOordeel('juist')}>
+        <button className="btn btn-juist" onClick={() => handleKaartOordeel('juist')}>
           ✓ Juist
         </button>
       </div>
