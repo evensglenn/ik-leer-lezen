@@ -13,6 +13,8 @@
   --andere-klinker: #7b4fd1;
   --medeklinker: #1b6fb0;
   --cluster: #12876b;
+  --juist: #1a9e5c;
+  --fout: #d1332c;
 
   font-family: 'Baloo 2', system-ui, sans-serif;
   color: var(--ink);
@@ -223,13 +225,18 @@ body {
   color: var(--muted);
 }
 
+.oefenen-kaart-wrap {
+  width: 100%;
+  max-width: 24rem;
+}
+
 .oefenen-kaart {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: baseline;
   flex-wrap: wrap;
   width: 100%;
-  max-width: 24rem;
   padding: 2.4rem 1.2rem;
   background: var(--paper);
   border-radius: var(--radius);
@@ -237,19 +244,99 @@ body {
   font-size: 3.4rem;
   font-weight: 800;
   text-align: center;
+  touch-action: pan-y;
+  user-select: none;
+  cursor: grab;
+  transition: transform 200ms ease;
+}
+
+.oefenen-kaart.is-slepen {
+  transition: none;
+  cursor: grabbing;
+}
+
+.stempel {
+  position: absolute;
+  top: 0.9rem;
+  padding: 0.3rem 0.9rem;
+  border: 3px solid currentColor;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+}
+
+.stempel-juist {
+  left: 0.9rem;
+  color: var(--juist);
+  transform: rotate(-12deg);
+}
+
+.stempel-fout {
+  right: 0.9rem;
+  color: var(--fout);
+  transform: rotate(12deg);
+}
+
+.oefenen-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
 }
 
 .oefenen-knoppen {
   display: flex;
-  gap: 0.8rem;
+  gap: 0.6rem;
 }
 
 .oefenen-knoppen .btn {
-  min-width: 8rem;
+  min-width: 5.5rem;
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+}
+
+.btn-juist {
+  background: var(--juist);
+}
+
+.btn-fout {
+  background: var(--fout);
 }
 
 .btn-stop-oefenen {
   margin-top: 1rem;
+}
+
+.oefenen-resultaat {
+  text-align: center;
+}
+
+.oefenen-resultaat h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--medeklinker);
+}
+
+.oefenen-telling {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.oefenen-telling .is-juist {
+  color: var(--juist);
+}
+
+.oefenen-telling .is-fout {
+  color: var(--fout);
+}
+
+.telling-scheiding {
+  color: var(--line);
 }
 
 .word-list {
@@ -321,6 +408,7 @@ body {
   }
 
   .oefenen-knoppen .btn {
-    min-width: 6.5rem;
+    min-width: 4.6rem;
+    font-size: 0.9rem;
   }
 }

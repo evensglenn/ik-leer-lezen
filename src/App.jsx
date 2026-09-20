@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { KLANKEN_GROUPS, KLANK_LABELS, splitIntoKlanken } from './klanken.js'
 import { WOORDEN } from './words.js'
 import { version as APP_VERSION } from '../package.json'
@@ -17,6 +17,10 @@ const GROUP_CLASS = {
 // met "alle woorden die er nu zijn", zelfs als dat er minder dan 10 zijn.
 const OEFEN_AANTALLEN = [10, 20, 50]
 
+// Hoeveel pixels er gesleept moet worden voordat een sleep als "geveegd"
+// telt in plaats van terug te veren naar het midden.
+const SWIPE_DREMPEL = 80
+
 function shuffle(lijst) {
   const kopie = [...lijst]
   for (let i = kopie.length - 1; i > 0; i--) {
@@ -34,33 +38,87 @@ function KlankenWoord({ klanken }) {
   ))
 }
 
-function Oefenen({ reeks, index, onVorige, onVolgende, onStop }) {
-  const { klanken } = reeks[index]
-  const isLaatste = index === reeks.length - 1
+// Eén kaartje: kan met de vinger/muis naar rechts (juist) of links (fout)
+// geveegd worden, of via de knoppen onderaan bevestigd worden — allebei
+// roepen dezelfde onOordeel("juist" | "fout") aan.
+function OefenKaart({ klanken, onOordeel }) {
+  const [sleep, setSleep] = useState({ x: 0, actief: false })
+  const startX = useRef(0)
+  const vertrokken = useRef(false)
 
+  const pointerDown = (e) => {
+    startX.current = e.clientX
+    vertrokken.current = false
+    setSleep({ x: 0, actief: true })
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+
+  const pointerMove = (e) => {
+    if (!sleep.actief) return
+    setSleep({ x: e.clientX - startX.current, actief: true })
+  }
+
+  const vliegWeg = (oordeel) => {
+    if (vertrokken.current) return
+    vertrokken.current = true
+    setSleep({ x: oordeel === 'juist' ? 640 : -640, actief: false })
+    setTimeout(() => onOordeel(oordeel), 160)
+  }
+
+  const pointerUp = () => {
+    if (vertrokken.current) return
+    if (sleep.x > SWIPE_DREMPEL) vliegWeg('juist')
+    else if (sleep.x < -SWIPE_DREMPEL) vliegWeg('fout')
+    else setSleep({ x: 0, actief: false })
+  }
+
+  const rotatie = Math.max(-12, Math.min(12, sleep.x / 12))
+  const stampJuist = Math.min(Math.max(sleep.x / SWIPE_DREMPEL, 0), 1)
+  const stampFout = Math.min(Math.max(-sleep.x / SWIPE_DREMPEL, 0), 1)
+
+  return (
+    <div className="oefenen-kaart-wrap">
+      <div
+        className={sleep.actief ? 'oefenen-kaart is-slepen' : 'oefenen-kaart'}
+        style={{ transform: `translateX(${sleep.x}px) rotate(${rotatie}deg)` }}
+        onPointerDown={pointerDown}
+        onPointerMove={pointerMove}
+        onPointerUp={pointerUp}
+        onPointerCancel={pointerUp}
+      >
+        <KlankenWoord klanken={klanken} />
+        <span className="stempel stempel-juist" style={{ opacity: stampJuist }}>
+          juist
+        </span>
+        <span className="stempel stempel-fout" style={{ opacity: stampFout }}>
+          fout
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
   return (
     <section className="oefenen">
       <p className="oefenen-voortgang">
-        {index + 1} / {reeks.length}
+        {index + 1} / {totaal}
       </p>
 
-      <div className="oefenen-kaart">
-        <KlankenWoord klanken={klanken} />
-      </div>
+      <OefenKaart key={index} klanken={woord.klanken} onOordeel={onOordeel} />
+
+      <p className="oefenen-hint">Veeg naar rechts = juist, naar links = fout</p>
 
       <div className="oefenen-knoppen">
         <button className="btn btn-quiet" onClick={onVorige} disabled={index === 0}>
           Vorige
         </button>
-        {isLaatste ? (
-          <button className="btn btn-primary" onClick={onStop}>
-            Klaar!
-          </button>
-        ) : (
-          <button className="btn btn-primary" onClick={onVolgende}>
-            Volgende
-          </button>
-        )}
+        <button className="btn btn-fout" onClick={() => onOordeel('fout')}>
+          ✗ Fout
+        </button>
+        <button className="btn btn-juist" onClick={() => onOordeel('juist')}>
+          ✓ Juist
+        </button>
       </div>
 
       <button className="btn btn-quiet btn-stop-oefenen" onClick={onStop}>
@@ -70,11 +128,35 @@ function Oefenen({ reeks, index, onVorige, onVolgende, onStop }) {
   )
 }
 
+function OefenResultaat({ aantalJuist, aantalFout, onOpnieuwFout, onTerug }) {
+  return (
+    <section className="oefenen oefenen-resultaat">
+      <h2>Klaar!</h2>
+      <p className="oefenen-telling">
+        <span className="is-juist">{aantalJuist} juist</span>
+        <span className="telling-scheiding">·</span>
+        <span className="is-fout">{aantalFout} fout</span>
+      </p>
+
+      {aantalFout > 0 && (
+        <button className="btn btn-primary" onClick={onOpnieuwFout}>
+          Oefen de {aantalFout} foute woordjes opnieuw
+        </button>
+      )}
+      <button className="btn btn-quiet" onClick={onTerug}>
+        Terug naar klanken
+      </button>
+    </section>
+  )
+}
+
 export default function App() {
   const [selected, setSelected] = useState(() => new Set())
   const [updateAvailable, setUpdateAvailable] = useState(false)
   const [oefenReeks, setOefenReeks] = useState(null)
+  const [oefenOordelen, setOefenOordelen] = useState([])
   const [oefenIndex, setOefenIndex] = useState(0)
+  const [oefenKlaar, setOefenKlaar] = useState(false)
 
   useEffect(() => {
     const onUpdate = () => setUpdateAvailable(true)
@@ -106,11 +188,29 @@ export default function App() {
     return opties
   }, [words])
 
-  const startOefenen = (aantal) => {
-    setOefenReeks(shuffle(words).slice(0, aantal))
+  const startOefenen = (aantal, bron = words) => {
+    const reeks = shuffle(bron).slice(0, aantal)
+    setOefenReeks(reeks)
+    setOefenOordelen(Array(reeks.length).fill(null))
     setOefenIndex(0)
+    setOefenKlaar(false)
   }
   const stopOefenen = () => setOefenReeks(null)
+
+  const oordeel = (verdict) => {
+    setOefenOordelen((arr) => {
+      const next = [...arr]
+      next[oefenIndex] = verdict
+      return next
+    })
+    if (oefenIndex >= oefenReeks.length - 1) setOefenKlaar(true)
+    else setOefenIndex((i) => i + 1)
+  }
+
+  const opnieuwFout = () => {
+    const fouteWoorden = oefenReeks.filter((_, i) => oefenOordelen[i] === 'fout')
+    startOefenen(fouteWoorden.length, fouteWoorden)
+  }
 
   return (
     <div className="shell">
@@ -120,13 +220,23 @@ export default function App() {
       </header>
 
       {oefenReeks ? (
-        <Oefenen
-          reeks={oefenReeks}
-          index={oefenIndex}
-          onVorige={() => setOefenIndex((i) => Math.max(i - 1, 0))}
-          onVolgende={() => setOefenIndex((i) => Math.min(i + 1, oefenReeks.length - 1))}
-          onStop={stopOefenen}
-        />
+        oefenKlaar ? (
+          <OefenResultaat
+            aantalJuist={oefenOordelen.filter((o) => o === 'juist').length}
+            aantalFout={oefenOordelen.filter((o) => o === 'fout').length}
+            onOpnieuwFout={opnieuwFout}
+            onTerug={stopOefenen}
+          />
+        ) : (
+          <Oefenen
+            woord={oefenReeks[oefenIndex]}
+            index={oefenIndex}
+            totaal={oefenReeks.length}
+            onOordeel={oordeel}
+            onVorige={() => setOefenIndex((i) => Math.max(i - 1, 0))}
+            onStop={stopOefenen}
+          />
+        )
       ) : (
         <>
           <section className="klanken-picker">
