@@ -330,7 +330,13 @@ export default function App() {
       return next
     })
 
-  const selectAll = () => setSelected(new Set(ALL_KLANKEN))
+  const selectAll = () => {
+    // "Alles aan" bedoelt ook echt alles, inclusief medeklinkerclusters —
+    // dat staat haaks op "enkel eenvoudige woordjes", dus die zetten we uit
+    // in plaats van de net geselecteerde clusters meteen weer te negeren.
+    setGeenClusters(false)
+    setSelected(new Set(ALL_KLANKEN))
+  }
   const clearAll = () => setSelected(new Set())
 
   const words = useMemo(() => {
