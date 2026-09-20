@@ -4,7 +4,7 @@
 // het manifest) altijd door. Enkel de gehashte build-bestanden onder /assets/
 // (hun naam verandert zodra de inhoud verandert) mogen veilig eerst uit de cache.
 
-const CACHE = 'ik-leer-lezen-v0.6.0'
+const CACHE = 'ik-leer-lezen-v0.7.0'
 
 self.addEventListener('install', () => self.skipWaiting())
 

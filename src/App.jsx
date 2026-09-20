@@ -7,7 +7,7 @@ const ALL_KLANKEN = KLANKEN_GROUPS.flatMap((g) => g.klanken)
 const GROUP_CLASS = {
   'Korte klinkers': 'is-korte-klinker',
   'Lange klinkers': 'is-lange-klinker',
-  'Open lettergreep (1 letter, klinkt lang)': 'is-open-lettergreep',
+  'Klinkt anders dan het staat': 'is-open-lettergreep',
   'Andere klinkers': 'is-andere-klinker',
   Medeklinkers: 'is-medeklinker',
   Medeklinkerclusters: 'is-cluster',

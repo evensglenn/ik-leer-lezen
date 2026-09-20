@@ -63,7 +63,7 @@ const RUWE_WOORDEN = [
   // Klank ch / ng / nk / sch (extra oefenwoorden)
   'nacht', 'licht', 'dicht', 'zacht', 'lachen', 'acht', 'ring', 'tong', 'jong',
   'long', 'vinger', 'koning', 'eng', 'streng', 'zingen', 'bank', 'tank', 'dank',
-  'wenk', 'pink', 'link', 'school', 'schaap', 'schoen', 'schaal', 'schip',
+  'wenk', 'pink', 'link', 'klank', 'school', 'schaap', 'schoen', 'schaal', 'schip',
   'schrik', 'schuur',
 
   // Nog wat losse, veelgebruikte korte woordjes

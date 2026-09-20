@@ -12,8 +12,8 @@ export const KLANKEN_GROUPS = [
     klanken: ['aa', 'ee', 'oo', 'uu'],
   },
   {
-    title: 'Open lettergreep (1 letter, klinkt lang)',
-    klanken: ['a-lang', 'e-lang', 'o-lang', 'u-lang'],
+    title: 'Klinkt anders dan het staat',
+    klanken: ['a-lang', 'e-lang', 'o-lang', 'u-lang', 'e-zwak'],
   },
   {
     title: 'Andere klinkers',
@@ -39,6 +39,7 @@ export const KLANK_LABELS = {
   'e-lang': 'e (ee)',
   'o-lang': 'o (oo)',
   'u-lang': 'u (uu)',
+  'e-zwak': 'e (u)',
 }
 
 // Voor de tokenizer tellen enkel de klanken die ook echt als losse letters in
@@ -65,6 +66,15 @@ const KLANKEN_SET = new Set(ALLE_KLANKEN)
 const OPEN_LETTERGREEP_KLINKERS = new Set(['a', 'e', 'o', 'u'])
 const MEDEKLINKER_DAN_KLINKER = /^([bcdfghjklmnpqrstvwxz]+)([aeiouy])/
 
+// De "stomme e": een onbeklemtoonde "e" aan het einde van een woord op "-en"
+// (bv. "kam-men", "ren-nen") klinkt niet als de volle "e" van "pet", maar als
+// een doffe uh — heel anders dan de klank die een kind bij de korte "e"
+// aanleert. Vandaar een eigen klank in plaats van gewoon dezelfde korte "e".
+// Enkel van toepassing als er al een andere klinker aan vooraf ging: in een
+// woord van 1 lettergreep zoals "pen" of "ben" is de "e" wél gewoon kort.
+const STOMME_E = /^n$/
+const KLINKERLETTER = /[aeiouy]/
+
 // Deelt een woord op in klanken door telkens de langst mogelijke gekende klank
 // te nemen ("sch" vóór "s", "eeuw" vóór "ee"). Werkt goed voor de korte,
 // niet-samengestelde woordjes die een beginnende lezer krijgt; bij een
@@ -90,7 +100,14 @@ export function splitIntoKlanken(woord) {
     const tekst = match ?? w[i]
 
     let klank = tekst
-    if (match?.length === 1 && OPEN_LETTERGREEP_KLINKERS.has(tekst)) {
+    if (
+      match?.length === 1 &&
+      tekst === 'e' &&
+      KLINKERLETTER.test(w.slice(0, i)) &&
+      STOMME_E.test(w.slice(i + 1))
+    ) {
+      klank = 'e-zwak'
+    } else if (match?.length === 1 && OPEN_LETTERGREEP_KLINKERS.has(tekst)) {
       const rest = w.slice(i + 1).match(MEDEKLINKER_DAN_KLINKER)
       // "x" is eigenlijk twee medeklinkers ineen ("ks"), sluit de lettergreep
       // dus af net als een dubbele medeklinker — vandaar de uitzondering.
