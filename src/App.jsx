@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { KLANKEN_GROUPS, splitIntoKlanken } from './klanken.js'
+import { KLANKEN_GROUPS, KLANK_LABELS, splitIntoKlanken } from './klanken.js'
 import { WOORDEN } from './words.js'
 import { version as APP_VERSION } from '../package.json'
 
@@ -7,6 +7,7 @@ const ALL_KLANKEN = KLANKEN_GROUPS.flatMap((g) => g.klanken)
 const GROUP_CLASS = {
   'Korte klinkers': 'is-korte-klinker',
   'Lange klinkers': 'is-lange-klinker',
+  'Open lettergreep (1 letter, klinkt lang)': 'is-open-lettergreep',
   'Andere klinkers': 'is-andere-klinker',
   Medeklinkers: 'is-medeklinker',
   Medeklinkerclusters: 'is-cluster',
@@ -153,7 +154,7 @@ export default function App() {
                       onClick={() => toggle(k)}
                       aria-pressed={selected.has(k)}
                     >
-                      {k}
+                      {KLANK_LABELS[k] ?? k}
                     </button>
                   ))}
                 </div>

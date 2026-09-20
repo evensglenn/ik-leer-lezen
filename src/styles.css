@@ -9,6 +9,7 @@
 
   --korte-klinker: #e4572e;
   --lange-klinker: #c8213e;
+  --open-lettergreep: #d68f00;
   --andere-klinker: #7b4fd1;
   --medeklinker: #1b6fb0;
   --cluster: #12876b;
@@ -133,6 +134,12 @@ body {
 .klank.is-on.is-lange-klinker {
   background: var(--lange-klinker);
   border-color: var(--lange-klinker);
+  color: var(--paper);
+}
+
+.klank.is-on.is-open-lettergreep {
+  background: var(--open-lettergreep);
+  border-color: var(--open-lettergreep);
   color: var(--paper);
 }
 

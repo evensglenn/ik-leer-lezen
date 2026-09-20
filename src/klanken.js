@@ -12,6 +12,10 @@ export const KLANKEN_GROUPS = [
     klanken: ['aa', 'ee', 'oo', 'uu'],
   },
   {
+    title: 'Open lettergreep (1 letter, klinkt lang)',
+    klanken: ['a-lang', 'e-lang', 'o-lang', 'u-lang'],
+  },
+  {
     title: 'Andere klinkers',
     klanken: ['ie', 'oe', 'eu', 'ui', 'ei', 'ij', 'au', 'ou', 'ooi', 'aai', 'oei', 'ieuw', 'eeuw'],
   },
@@ -28,8 +32,23 @@ export const KLANKEN_GROUPS = [
   },
 ]
 
+// Leesbare knoptekst voor klanken waarvan de code (bv. "o-lang") niet is wat
+// er echt op de knop moet staan.
+export const KLANK_LABELS = {
+  'a-lang': 'a (aa)',
+  'e-lang': 'e (ee)',
+  'o-lang': 'o (oo)',
+  'u-lang': 'u (uu)',
+}
+
+// Voor de tokenizer tellen enkel de klanken die ook echt als losse letters in
+// een woord kunnen voorkomen — de "open lettergreep"-klanken hieronder zijn
+// een aparte, afgeleide classificatie en worden dus hier bewust niet in
+// meegenomen (anders zou de tokenizer naar een letterlijke reeks "a-lang"
+// in de tekst gaan zoeken, wat natuurlijk nooit voorkomt).
+const MATCHBARE_KLANKEN = KLANKEN_GROUPS.flatMap((g) => g.klanken).filter((k) => !k.includes('-'))
 // Van lang naar kort, zodat de tokenizer eerst "sch" probeert vóór "s".
-const ALLE_KLANKEN = KLANKEN_GROUPS.flatMap((g) => g.klanken).sort((a, b) => b.length - a.length)
+const ALLE_KLANKEN = [...MATCHBARE_KLANKEN].sort((a, b) => b.length - a.length)
 const MAX_KLANK_LENGTE = ALLE_KLANKEN[0].length
 const KLANKEN_SET = new Set(ALLE_KLANKEN)
 
@@ -37,9 +56,12 @@ const KLANKEN_SET = new Set(ALLE_KLANKEN)
 // medeklinker en dan weer een klinker, klinkt lang — bv. de "o" in "ko-ken"
 // (vergelijk met "kok", waar de o wél kort blijft omdat er niets op volgt, of
 // "pot-ten", waar de dubbele t de lettergreep juist gesloten houdt). Zo'n
-// woord wordt dus nog altijd met één letter geschreven, maar telt mee als de
-// lange klank. "i" hoort hier niet bij: een losse "i" in een open lettergreep
-// komt in het Nederlands niet voor (dat wordt altijd als "ie" geschreven).
+// woord wordt dus nog altijd met één letter geschreven, maar telt als een
+// eigen, apart aan te vinken klank (zie "Open lettergreep" hierboven) — niet
+// zomaar hetzelfde vakje als de dubbel geschreven lange klinker ("oo"), want
+// dat ene letter zien en toch lang lezen is een aparte vaardigheid. "i" hoort
+// hier niet bij: een losse "i" in een open lettergreep komt in het
+// Nederlands niet voor (dat wordt altijd als "ie" geschreven).
 const OPEN_LETTERGREEP_KLINKERS = new Set(['a', 'e', 'o', 'u'])
 const MEDEKLINKER_DAN_KLINKER = /^([bcdfghjklmnpqrstvwxz]+)([aeiouy])/
 
@@ -72,7 +94,7 @@ export function splitIntoKlanken(woord) {
       const rest = w.slice(i + 1).match(MEDEKLINKER_DAN_KLINKER)
       // "x" is eigenlijk twee medeklinkers ineen ("ks"), sluit de lettergreep
       // dus af net als een dubbele medeklinker — vandaar de uitzondering.
-      if (rest && rest[1].length === 1 && rest[1] !== 'x') klank = tekst + tekst
+      if (rest && rest[1].length === 1 && rest[1] !== 'x') klank = tekst + '-lang'
     }
 
     tokens.push({ tekst, klank })
