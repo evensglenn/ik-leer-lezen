@@ -152,6 +152,21 @@ body {
   margin-top: 0;
 }
 
+/* Op smalle schermen "verdwijnt" deze wrapper uit de layout (display:
+   contents), zodat de twee klankgroepen erin zich gewoon gedragen als
+   losse, gestapelde .klanken-group's. Vanaf 48rem staan ze naast elkaar. */
+.klanken-paar {
+  display: contents;
+}
+
+@media (min-width: 48rem) {
+  .klanken-paar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1.4rem;
+  }
+}
+
 .klanken-group-kop {
   display: flex;
   flex-wrap: wrap;

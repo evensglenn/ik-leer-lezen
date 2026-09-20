@@ -5,6 +5,8 @@ import { version as APP_VERSION } from '../package.json'
 
 const ALL_KLANKEN = KLANKEN_GROUPS.flatMap((g) => g.klanken)
 const MEDEKLINKERCLUSTER_KLANKEN = KLANKEN_GROUPS.find((g) => g.title === 'Medeklinkerclusters').klanken
+// Wordt op bredere schermen naast "Lange klinkers" getoond — zie klanken-paar.
+const KLINKT_ANDERS_GROEP = KLANKEN_GROUPS.find((g) => g.title === 'Klinkt anders dan het staat')
 
 // Zodat een pagina-refresh niet de hele klankenselectie wist.
 const KLANKEN_OPSLAG_SLEUTEL = 'ik-leer-lezen:geselecteerde-klanken'
@@ -278,6 +280,47 @@ function OefenResultaat({ aantalJuist, aantalFout, onOpnieuwFout, onTerug }) {
   )
 }
 
+// Eén klankgroep (titel + rij aanvinkbare klanken). "Alles aan/uit" komt
+// enkel mee op de eerste groep; het "enkel eenvoudige woordjes"-effect op
+// de klankknoppen zelf geldt enkel voor de medeklinkerclusters.
+function KlankenGroep({ g, eerste, toonActies, selected, toggle, geenClusters, selectAll, clearAll }) {
+  return (
+    <div className={eerste ? 'klanken-group is-eerste' : 'klanken-group'}>
+      <div className="klanken-group-kop">
+        <h2>{g.title}</h2>
+        {toonActies && (
+          <div className="klanken-actions">
+            <button className="btn" onClick={selectAll}>
+              Alles aan
+            </button>
+            <button className="btn btn-quiet" onClick={clearAll}>
+              Alles uit
+            </button>
+          </div>
+        )}
+      </div>
+      <div className="klanken-row">
+        {g.klanken.map((k) => {
+          const uitgeschakeld = geenClusters && g.title === 'Medeklinkerclusters'
+          return (
+            <button
+              key={k}
+              className={
+                selected.has(k) ? `klank ${GROUP_CLASS[g.title]} is-on` : `klank ${GROUP_CLASS[g.title]}`
+              }
+              onClick={() => toggle(k)}
+              disabled={uitgeschakeld}
+              aria-pressed={selected.has(k)}
+            >
+              {KLANK_LABELS[k] ?? k}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const [selected, setSelected] = useState(laadOpgeslagenKlanken)
   const [geenClusters, setGeenClusters] = useState(laadGeenClusters)
@@ -406,58 +449,47 @@ export default function App() {
       ) : (
         <>
           <section className="klanken-picker">
-            {KLANKEN_GROUPS.map((g, i) => (
-              <div key={g.title}>
-                <div className={i === 0 ? 'klanken-group is-eerste' : 'klanken-group'}>
-                  <div className="klanken-group-kop">
-                    <h2>{g.title}</h2>
-                    {i === 0 && (
-                      <div className="klanken-actions">
-                        <button className="btn" onClick={selectAll}>
-                          Alles aan
-                        </button>
-                        <button className="btn btn-quiet" onClick={clearAll}>
-                          Alles uit
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="klanken-row">
-                    {g.klanken.map((k) => {
-                      const uitgeschakeld = geenClusters && g.title === 'Medeklinkerclusters'
-                      return (
-                        <button
-                          key={k}
-                          className={
-                            selected.has(k)
-                              ? `klank ${GROUP_CLASS[g.title]} is-on`
-                              : `klank ${GROUP_CLASS[g.title]}`
-                          }
-                          onClick={() => toggle(k)}
-                          disabled={uitgeschakeld}
-                          aria-pressed={selected.has(k)}
-                        >
-                          {KLANK_LABELS[k] ?? k}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
+            {KLANKEN_GROUPS.map((g, i) => {
+              // Wordt samen met "Lange klinkers" getoond (zie hieronder), niet
+              // nog eens apart.
+              if (g.title === 'Klinkt anders dan het staat') return null
 
-                {g.title === 'Medeklinkers' && (
-                  <label className="niveau-toggle">
-                    <input
-                      type="checkbox"
-                      checked={geenClusters}
-                      onChange={(e) => setGeenClusters(e.target.checked)}
-                    />
-                    <span>
-                      Enkel eenvoudige woordjes <em>(geen "kl", "tr", "bakken", ...)</em>
-                    </span>
-                  </label>
-                )}
-              </div>
-            ))}
+              const groepProps = {
+                selected,
+                toggle,
+                geenClusters,
+                selectAll,
+                clearAll,
+              }
+
+              if (g.title === 'Lange klinkers') {
+                return (
+                  <div key={g.title} className="klanken-paar">
+                    <KlankenGroep g={g} eerste={false} toonActies={false} {...groepProps} />
+                    <KlankenGroep g={KLINKT_ANDERS_GROEP} eerste={false} toonActies={false} {...groepProps} />
+                  </div>
+                )
+              }
+
+              return (
+                <div key={g.title}>
+                  <KlankenGroep g={g} eerste={i === 0} toonActies={i === 0} {...groepProps} />
+
+                  {g.title === 'Medeklinkers' && (
+                    <label className="niveau-toggle">
+                      <input
+                        type="checkbox"
+                        checked={geenClusters}
+                        onChange={(e) => setGeenClusters(e.target.checked)}
+                      />
+                      <span>
+                        Enkel eenvoudige woordjes <em>(geen "kl", "tr", "bakken", ...)</em>
+                      </span>
+                    </label>
+                  )}
+                </div>
+              )
+            })}
           </section>
 
           <section className="results">
