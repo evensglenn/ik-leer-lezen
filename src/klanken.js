@@ -125,3 +125,23 @@ export function splitIntoKlanken(woord) {
 export function isReadable(woord, gekozenKlanken) {
   return splitIntoKlanken(woord).every(({ klank }) => gekozenKlanken.has(klank))
 }
+
+// Losse medeklinkerletters (geen gefuseerde klank zoals "ng"/"nk"/"sch", die
+// al als één klank tellen) — gebruikt om medeklinkerclusters te herkennen.
+const MEDEKLINKER_LETTERS = new Set(
+  KLANKEN_GROUPS.find((g) => g.title === 'Medeklinkers').klanken,
+)
+
+// Twee medeklinkerletters na elkaar — of het nu een cluster van verschillende
+// letters is ("kl" in "klik", "tr" in "trap") of eenzelfde letter dubbel
+// ("kk" in "bakken") — is voor een kind dat nog maar net leert lezen een
+// extra horde bovenop de eenvoudige medeklinker-klinker-medeklinker-woordjes
+// ("pot", "kip"). Die combinaties leren ze pas later.
+export function heeftMedeklinkerCluster(klanken) {
+  return klanken.some(
+    (token, i) =>
+      i > 0 &&
+      MEDEKLINKER_LETTERS.has(token.klank) &&
+      MEDEKLINKER_LETTERS.has(klanken[i - 1].klank),
+  )
+}

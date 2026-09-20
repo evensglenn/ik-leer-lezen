@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { KLANKEN_GROUPS, KLANK_LABELS, splitIntoKlanken } from './klanken.js'
+import { KLANKEN_GROUPS, KLANK_LABELS, splitIntoKlanken, heeftMedeklinkerCluster } from './klanken.js'
 import { WOORDEN } from './words.js'
 import { version as APP_VERSION } from '../package.json'
 
@@ -15,6 +15,18 @@ function laadOpgeslagenKlanken() {
     return new Set(Array.isArray(lijst) ? lijst.filter((k) => ALL_KLANKEN.includes(k)) : [])
   } catch {
     return new Set()
+  }
+}
+
+// Voor een beginnende lezer: woordjes met medeklinkerclusters (bv. "klik",
+// "trap") of een dubbel geschreven medeklinker (bv. "bakken") overslaan.
+const CLUSTERS_OPSLAG_SLEUTEL = 'ik-leer-lezen:geen-medeklinkerclusters'
+
+function laadGeenClusters() {
+  try {
+    return localStorage.getItem(CLUSTERS_OPSLAG_SLEUTEL) === 'true'
+  } catch {
+    return false
   }
 }
 const GROUP_CLASS = {
@@ -256,6 +268,7 @@ function OefenResultaat({ aantalJuist, aantalFout, onOpnieuwFout, onTerug }) {
 
 export default function App() {
   const [selected, setSelected] = useState(laadOpgeslagenKlanken)
+  const [geenClusters, setGeenClusters] = useState(laadGeenClusters)
   const [updateAvailable, setUpdateAvailable] = useState(false)
   const [oefenReeks, setOefenReeks] = useState(null)
   const [oefenOordelen, setOefenOordelen] = useState([])
@@ -276,6 +289,14 @@ export default function App() {
     }
   }, [selected])
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(CLUSTERS_OPSLAG_SLEUTEL, String(geenClusters))
+    } catch {
+      // localStorage niet beschikbaar (bv. privénavigatie) — negeer stilzwijgend
+    }
+  }, [geenClusters])
+
   const toggle = (k) =>
     setSelected((s) => {
       const next = new Set(s)
@@ -291,8 +312,9 @@ export default function App() {
     if (selected.size === 0) return []
     return WOORDEN.map((word) => ({ word, klanken: splitIntoKlanken(word) }))
       .filter(({ klanken }) => klanken.every(({ klank }) => selected.has(klank)))
+      .filter(({ klanken }) => !geenClusters || !heeftMedeklinkerCluster(klanken))
       .sort((a, b) => a.word.length - b.word.length || a.word.localeCompare(b.word, 'nl'))
-  }, [selected])
+  }, [selected, geenClusters])
 
   const geselecteerdeKlanken = useMemo(
     () => [...selected].sort((a, b) => a.localeCompare(b, 'nl')),
@@ -366,6 +388,17 @@ export default function App() {
                 Alles uit
               </button>
             </div>
+
+            <label className="niveau-toggle">
+              <input
+                type="checkbox"
+                checked={geenClusters}
+                onChange={(e) => setGeenClusters(e.target.checked)}
+              />
+              <span>
+                Enkel eenvoudige woordjes <em>(geen "kl", "tr", "bakken", ...)</em>
+              </span>
+            </label>
 
             {KLANKEN_GROUPS.map((g) => (
               <div key={g.title} className="klanken-group">
