@@ -166,16 +166,21 @@ function OefenKaart({ klanken, onDecision, triggerOordeel }) {
 }
 
 function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
-  // Het oordeel wordt bewaard sámen met de index waarvoor het gold, zodat
-  // een kaartje voor een nieuwe index nooit het oordeel van de vorige kaart
-  // kan overerven (bv. via een prop die nog niet is teruggezet) — het
-  // oordeel is domweg niet van toepassing zodra index niet meer matcht.
-  const [kaartOordeel, setKaartOordeel] = useState({ index: -1, uitkomst: null })
-  const triggerOordeel = kaartOordeel.index === index ? kaartOordeel.uitkomst : null
+  // Enkel een lokale, tijdelijke "actie hangende"-vlag: wordt bij elke
+  // nieuwe index teruggezet naar null. Een kaartje dat een woord opnieuw
+  // toont (bv. na "Vorige") start dus altijd onbeoordeeld, ook al werd dat
+  // woord al eerder beoordeeld — OefenKaart zelf negeert toch elk oordeel
+  // waarmee het al gemount werd, dus een kortstondig stale prop-waarde hier
+  // is onschadelijk.
+  const [kaartOordeel, setKaartOordeel] = useState(null)
+
+  useEffect(() => {
+    setKaartOordeel(null)
+  }, [index])
 
   const triggerKaartOordeel = (uitkomst) => {
-    if (triggerOordeel !== null) return
-    setKaartOordeel({ index, uitkomst })
+    if (kaartOordeel !== null) return
+    setKaartOordeel(uitkomst)
   }
 
   const handleKaartOordeel = (uitkomst) => {
@@ -197,7 +202,7 @@ function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
         key={index}
         klanken={woord.klanken}
         onDecision={handleKaartOordeel}
-        triggerOordeel={triggerOordeel}
+        triggerOordeel={kaartOordeel}
       />
 
       <div className="oefenen-feedback">
@@ -211,7 +216,7 @@ function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
         <button
           className="btn btn-fout"
           onClick={() => triggerKaartOordeel('fout')}
-          disabled={triggerOordeel !== null}
+          disabled={kaartOordeel !== null}
           aria-label="Markeer woord als fout"
         >
           ✗ Fout
@@ -219,7 +224,7 @@ function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
         <button
           className="btn btn-juist"
           onClick={() => triggerKaartOordeel('juist')}
-          disabled={triggerOordeel !== null}
+          disabled={kaartOordeel !== null}
           aria-label="Markeer woord als juist"
         >
           ✓ Juist
