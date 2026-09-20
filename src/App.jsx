@@ -62,13 +62,15 @@ function KlankenWoord({ klanken, wit, eenKleur }) {
 // roepen dezelfde onOordeel("juist" | "fout") aan. Tijdens het slepen kleurt
 // de hele kaart mee en verschijnt er een groot vinkje/kruisje, zodat het
 // oordeel ook op een boogje van een tablet meteen duidelijk is.
-function OefenKaart({ klanken, onOordeel, triggerOordeel }) {
+function OefenKaart({ klanken, onDecision, triggerOordeel }) {
   const [sleep, setSleep] = useState({ x: 0, actief: false })
   const startX = useRef(0)
   const vertrokken = useRef(false)
 
   useEffect(() => {
-    if (triggerOordeel) vliegWeg(triggerOordeel)
+    if (triggerOordeel) {
+      vliegWeg(triggerOordeel)
+    }
   }, [triggerOordeel])
 
   const pointerDown = (e) => {
@@ -87,7 +89,7 @@ function OefenKaart({ klanken, onOordeel, triggerOordeel }) {
     if (vertrokken.current) return
     vertrokken.current = true
     setSleep({ x: oordeel === 'juist' ? 640 : -640, actief: false })
-    setTimeout(() => onOordeel(oordeel), 160)
+    setTimeout(() => onDecision(oordeel), 160)
   }
 
   const pointerUp = () => {
@@ -130,14 +132,20 @@ function OefenKaart({ klanken, onOordeel, triggerOordeel }) {
 }
 
 function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
-  const [kaartOordeel, setKaartOordeel] = useState(null)
+  // Het oordeel wordt bewaard sámen met de index waarvoor het gold, zodat
+  // een kaartje voor een nieuwe index nooit het oordeel van de vorige kaart
+  // kan overerven (bv. via een prop die nog niet is teruggezet) — het
+  // oordeel is domweg niet van toepassing zodra index niet meer matcht.
+  const [kaartOordeel, setKaartOordeel] = useState({ index: -1, uitkomst: null })
+  const triggerOordeel = kaartOordeel.index === index ? kaartOordeel.uitkomst : null
 
-  useEffect(() => {
-    setKaartOordeel(null)
-  }, [index])
+  const triggerKaartOordeel = (uitkomst) => {
+    if (triggerOordeel !== null) return
+    setKaartOordeel({ index, uitkomst })
+  }
 
   const handleKaartOordeel = (uitkomst) => {
-    setKaartOordeel(uitkomst)
+    onOordeel(uitkomst)
   }
 
   return (
@@ -149,20 +157,32 @@ function Oefenen({ woord, index, totaal, onOordeel, onVorige, onStop }) {
       <OefenKaart
         key={index}
         klanken={woord.klanken}
-        onOordeel={onOordeel}
-        triggerOordeel={kaartOordeel}
+        onDecision={handleKaartOordeel}
+        triggerOordeel={triggerOordeel}
       />
 
-      <p className="oefenen-hint">Veeg naar rechts = juist, naar links = fout</p>
+      <div className="oefenen-feedback">
+        <span className="oefenen-hint">Veeg naar rechts = juist, naar links = fout</span>
+      </div>
 
       <div className="oefenen-knoppen">
-        <button className="btn btn-quiet" onClick={onVorige} disabled={index === 0}>
+        <button className="btn btn-quiet" onClick={onVorige} disabled={index === 0} aria-label="Vorige woord">
           Vorige
         </button>
-        <button className="btn btn-fout" onClick={() => handleKaartOordeel('fout')}>
+        <button
+          className="btn btn-fout"
+          onClick={() => triggerKaartOordeel('fout')}
+          disabled={triggerOordeel !== null}
+          aria-label="Markeer woord als fout"
+        >
           ✗ Fout
         </button>
-        <button className="btn btn-juist" onClick={() => handleKaartOordeel('juist')}>
+        <button
+          className="btn btn-juist"
+          onClick={() => triggerKaartOordeel('juist')}
+          disabled={triggerOordeel !== null}
+          aria-label="Markeer woord als juist"
+        >
           ✓ Juist
         </button>
       </div>
@@ -227,6 +247,11 @@ export default function App() {
       .filter(({ klanken }) => klanken.every(({ klank }) => selected.has(klank)))
       .sort((a, b) => a.word.length - b.word.length || a.word.localeCompare(b.word, 'nl'))
   }, [selected])
+
+  const geselecteerdeKlanken = useMemo(
+    () => [...selected].sort((a, b) => a.localeCompare(b, 'nl')),
+    [selected],
+  )
 
   const oefenOpties = useMemo(() => {
     const opties = OEFEN_AANTALLEN.filter((n) => n < words.length)
@@ -318,12 +343,35 @@ export default function App() {
             ))}
           </section>
 
+          {selected.size > 0 && (
+            <div className="selection-summary" aria-live="polite">
+              <div className="selection-summary__label">Geselecteerd</div>
+              <div className="selection-summary__chips">
+                {geselecteerdeKlanken.slice(0, 8).map((klank) => (
+                  <span key={klank} className="selection-summary__chip">
+                    {KLANK_LABELS[klank] ?? klank}
+                  </span>
+                ))}
+                {geselecteerdeKlanken.length > 8 && (
+                  <span className="selection-summary__more">+{geselecteerdeKlanken.length - 8}</span>
+                )}
+              </div>
+            </div>
+          )}
+
           <section className="results">
-            <h2 className="results-title">
-              {selected.size === 0
-                ? 'Kies eerst een paar klanken hierboven'
-                : `${words.length} woordje${words.length === 1 ? '' : 's'} om te lezen`}
-            </h2>
+            <div className="results-header">
+              <h2 className="results-title">
+                {selected.size === 0
+                  ? 'Kies eerst een paar klanken hierboven'
+                  : `${words.length} woordje${words.length === 1 ? '' : 's'} om te lezen`}
+              </h2>
+              {selected.size > 0 && (
+                <button className="btn btn-quiet btn-small" onClick={clearAll}>
+                  Reset
+                </button>
+              )}
+            </div>
 
             {selected.size > 0 && words.length === 0 && (
               <p className="empty">Nog geen woordjes met deze klanken. Kies er nog een paar.</p>
