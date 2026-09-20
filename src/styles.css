@@ -166,6 +166,73 @@ body {
   font-size: 1.05rem;
 }
 
+.oefenen-start {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 1.1rem;
+  padding: 0.9rem;
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.oefenen-start-label {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.oefenen-start-knoppen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.oefenen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 2.4rem 1rem 1rem;
+}
+
+.oefenen-voortgang {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.oefenen-kaart {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 24rem;
+  padding: 2.4rem 1.2rem;
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-size: 3.4rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.oefenen-knoppen {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.oefenen-knoppen .btn {
+  min-width: 8rem;
+}
+
+.btn-stop-oefenen {
+  margin-top: 1rem;
+}
+
 .word-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
@@ -227,5 +294,14 @@ body {
 @media (max-width: 26rem) {
   .word-card {
     font-size: 1.4rem;
+  }
+
+  .oefenen-kaart {
+    font-size: 2.4rem;
+    padding: 1.8rem 1rem;
+  }
+
+  .oefenen-knoppen .btn {
+    min-width: 6.5rem;
   }
 }

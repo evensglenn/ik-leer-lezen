@@ -84,24 +84,25 @@ const RUWE_WOORDEN = [
 
   // Rijtjes van korte woordjes per klankfamilie (a), zodat er van élke
   // combinatie veel te lezen valt, niet enkel losse thema-woorden.
-  'mat', 'rat', 'lat', 'man', 'kan', 'pan', 'ban', 'dan', 'plan', 'bak', 'zak',
-  'vak', 'hak', 'kak', 'lak', 'pak', 'jak', 'dal', 'hal', 'mal', 'pal', 'tal',
-  'wal', 'zal', 'kap', 'lap', 'rap', 'tap', 'dam', 'ram', 'tam', 'gas', 'kas',
-  'was', 'pad', 'rad', 'laf',
+  'an', 'mat', 'rat', 'lat', 'man', 'kan', 'pan', 'ban', 'dan', 'plan', 'bak',
+  'zak', 'vak', 'hak', 'kak', 'lak', 'pak', 'jak', 'dal', 'hal', 'mal', 'pal',
+  'tal', 'wal', 'zal', 'kap', 'lap', 'rap', 'tap', 'dam', 'ram', 'tam', 'gas',
+  'kas', 'was', 'pad', 'rad', 'laf',
 
   // (e)
-  'ben', 'den', 'hen', 'ken', 'wen', 'ren', 'men', 'bel', 'fel', 'zet',
+  'el', 'ben', 'den', 'hen', 'ken', 'wen', 'ren', 'men', 'bel', 'fel', 'zet',
 
   // (i)
   'ik', 'lik', 'pik', 'tik', 'mik', 'prik', 'strik', 'klik', 'min', 'vin',
   'zit', 'pit', 'lid',
 
   // (o)
-  'kok', 'bok', 'dok', 'hok', 'lok', 'mok', 'rok', 'kon', 'ton', 'kop', 'stop',
-  'mos', 'pot', 'tot',
+  'kok', 'bok', 'dok', 'hok', 'lok', 'mok', 'rok', 'nok', 'jok', 'brok', 'kon',
+  'ton', 'kop', 'stop', 'mos', 'pot', 'tot', 'bol', 'dol', 'hol', 'mol', 'wol',
+  'dom', 'log',
 
   // (u)
-  'duf', 'stuk', 'trek', 'vlak', 'vlek', 'krap', 'plak',
+  'duf', 'stuk', 'trek', 'vlak', 'vlek', 'krap', 'plak', 'geluk',
 
   // Voornaamwoorden — komen in bijna elke zin voor
   'jij', 'hij', 'zij', 'wij', 'ze', 'we', 'jullie', 'mijn', 'jouw', 'zijn',

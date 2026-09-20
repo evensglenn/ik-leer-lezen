@@ -33,11 +33,25 @@ const ALLE_KLANKEN = KLANKEN_GROUPS.flatMap((g) => g.klanken).sort((a, b) => b.l
 const MAX_KLANK_LENGTE = ALLE_KLANKEN[0].length
 const KLANKEN_SET = new Set(ALLE_KLANKEN)
 
+// De "open lettergreep"-regel: een korte klinker gevolgd door precies één
+// medeklinker en dan weer een klinker, klinkt lang — bv. de "o" in "ko-ken"
+// (vergelijk met "kok", waar de o wél kort blijft omdat er niets op volgt, of
+// "pot-ten", waar de dubbele t de lettergreep juist gesloten houdt). Zo'n
+// woord wordt dus nog altijd met één letter geschreven, maar telt mee als de
+// lange klank. "i" hoort hier niet bij: een losse "i" in een open lettergreep
+// komt in het Nederlands niet voor (dat wordt altijd als "ie" geschreven).
+const OPEN_LETTERGREEP_KLINKERS = new Set(['a', 'e', 'o', 'u'])
+const MEDEKLINKER_DAN_KLINKER = /^([bcdfghjklmnpqrstvwxz]+)([aeiouy])/
+
 // Deelt een woord op in klanken door telkens de langst mogelijke gekende klank
 // te nemen ("sch" vóór "s", "eeuw" vóór "ee"). Werkt goed voor de korte,
 // niet-samengestelde woordjes die een beginnende lezer krijgt; bij een
 // onbekend teken (bv. een accent) wordt dat teken als losse "klank" bewaard,
 // zodat zo'n woord vanzelf afvalt zolang niemand net dat teken aanvinkt.
+//
+// Elk token heeft een "tekst" (wat er echt staat, voor de weergave — nooit
+// wijzigen, anders leert een kind een verkeerde spelling) en een "klank"
+// (welk vakje moet aangevinkt zijn, bv. "oo" voor de "o" in "koken").
 export function splitIntoKlanken(woord) {
   const w = woord.toLowerCase()
   const tokens = []
@@ -51,7 +65,17 @@ export function splitIntoKlanken(woord) {
         break
       }
     }
-    tokens.push(match ?? w[i])
+    const tekst = match ?? w[i]
+
+    let klank = tekst
+    if (match?.length === 1 && OPEN_LETTERGREEP_KLINKERS.has(tekst)) {
+      const rest = w.slice(i + 1).match(MEDEKLINKER_DAN_KLINKER)
+      // "x" is eigenlijk twee medeklinkers ineen ("ks"), sluit de lettergreep
+      // dus af net als een dubbele medeklinker — vandaar de uitzondering.
+      if (rest && rest[1].length === 1 && rest[1] !== 'x') klank = tekst + tekst
+    }
+
+    tokens.push({ tekst, klank })
     i += match ? match.length : 1
   }
   return tokens
@@ -60,5 +84,5 @@ export function splitIntoKlanken(woord) {
 // Een woord is "leesbaar" met een set gekozen klanken zodra elke klank waaruit
 // het is opgebouwd, in die set zit.
 export function isReadable(woord, gekozenKlanken) {
-  return splitIntoKlanken(woord).every((k) => gekozenKlanken.has(k))
+  return splitIntoKlanken(woord).every(({ klank }) => gekozenKlanken.has(klank))
 }

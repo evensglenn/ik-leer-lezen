@@ -12,9 +12,68 @@ const GROUP_CLASS = {
   Medeklinkerclusters: 'is-cluster',
 }
 
+// Aantallen die aangeboden worden om 1 voor 1 te oefenen — altijd aangevuld
+// met "alle woorden die er nu zijn", zelfs als dat er minder dan 10 zijn.
+const OEFEN_AANTALLEN = [10, 20, 50]
+
+function shuffle(lijst) {
+  const kopie = [...lijst]
+  for (let i = kopie.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[kopie[i], kopie[j]] = [kopie[j], kopie[i]]
+  }
+  return kopie
+}
+
+function KlankenWoord({ klanken }) {
+  return klanken.map(({ tekst }, i) => (
+    <span key={i} className={i % 2 === 0 ? 'klank-part' : 'klank-part is-alt'}>
+      {tekst}
+    </span>
+  ))
+}
+
+function Oefenen({ reeks, index, onVorige, onVolgende, onStop }) {
+  const { klanken } = reeks[index]
+  const isLaatste = index === reeks.length - 1
+
+  return (
+    <section className="oefenen">
+      <p className="oefenen-voortgang">
+        {index + 1} / {reeks.length}
+      </p>
+
+      <div className="oefenen-kaart">
+        <KlankenWoord klanken={klanken} />
+      </div>
+
+      <div className="oefenen-knoppen">
+        <button className="btn btn-quiet" onClick={onVorige} disabled={index === 0}>
+          Vorige
+        </button>
+        {isLaatste ? (
+          <button className="btn btn-primary" onClick={onStop}>
+            Klaar!
+          </button>
+        ) : (
+          <button className="btn btn-primary" onClick={onVolgende}>
+            Volgende
+          </button>
+        )}
+      </div>
+
+      <button className="btn btn-quiet btn-stop-oefenen" onClick={onStop}>
+        Stop met oefenen
+      </button>
+    </section>
+  )
+}
+
 export default function App() {
   const [selected, setSelected] = useState(() => new Set())
   const [updateAvailable, setUpdateAvailable] = useState(false)
+  const [oefenReeks, setOefenReeks] = useState(null)
+  const [oefenIndex, setOefenIndex] = useState(0)
 
   useEffect(() => {
     const onUpdate = () => setUpdateAvailable(true)
@@ -36,9 +95,21 @@ export default function App() {
   const words = useMemo(() => {
     if (selected.size === 0) return []
     return WOORDEN.map((word) => ({ word, klanken: splitIntoKlanken(word) }))
-      .filter(({ klanken }) => klanken.every((k) => selected.has(k)))
+      .filter(({ klanken }) => klanken.every(({ klank }) => selected.has(klank)))
       .sort((a, b) => a.word.length - b.word.length || a.word.localeCompare(b.word, 'nl'))
   }, [selected])
+
+  const oefenOpties = useMemo(() => {
+    const opties = OEFEN_AANTALLEN.filter((n) => n < words.length)
+    opties.push(words.length)
+    return opties
+  }, [words])
+
+  const startOefenen = (aantal) => {
+    setOefenReeks(shuffle(words).slice(0, aantal))
+    setOefenIndex(0)
+  }
+  const stopOefenen = () => setOefenReeks(null)
 
   return (
     <div className="shell">
@@ -47,60 +118,83 @@ export default function App() {
         <p className="subtitle">Kies klanken, vind woordjes om samen te lezen.</p>
       </header>
 
-      <section className="klanken-picker">
-        <div className="klanken-actions">
-          <button className="btn" onClick={selectAll}>
-            Alles aan
-          </button>
-          <button className="btn btn-quiet" onClick={clearAll}>
-            Alles uit
-          </button>
-        </div>
-
-        {KLANKEN_GROUPS.map((g) => (
-          <div key={g.title} className="klanken-group">
-            <h2>{g.title}</h2>
-            <div className="klanken-row">
-              {g.klanken.map((k) => (
-                <button
-                  key={k}
-                  className={
-                    selected.has(k) ? `klank ${GROUP_CLASS[g.title]} is-on` : `klank ${GROUP_CLASS[g.title]}`
-                  }
-                  onClick={() => toggle(k)}
-                  aria-pressed={selected.has(k)}
-                >
-                  {k}
-                </button>
-              ))}
+      {oefenReeks ? (
+        <Oefenen
+          reeks={oefenReeks}
+          index={oefenIndex}
+          onVorige={() => setOefenIndex((i) => Math.max(i - 1, 0))}
+          onVolgende={() => setOefenIndex((i) => Math.min(i + 1, oefenReeks.length - 1))}
+          onStop={stopOefenen}
+        />
+      ) : (
+        <>
+          <section className="klanken-picker">
+            <div className="klanken-actions">
+              <button className="btn" onClick={selectAll}>
+                Alles aan
+              </button>
+              <button className="btn btn-quiet" onClick={clearAll}>
+                Alles uit
+              </button>
             </div>
-          </div>
-        ))}
-      </section>
 
-      <section className="results">
-        <h2 className="results-title">
-          {selected.size === 0
-            ? 'Kies eerst een paar klanken hierboven'
-            : `${words.length} woordje${words.length === 1 ? '' : 's'} om te lezen`}
-        </h2>
+            {KLANKEN_GROUPS.map((g) => (
+              <div key={g.title} className="klanken-group">
+                <h2>{g.title}</h2>
+                <div className="klanken-row">
+                  {g.klanken.map((k) => (
+                    <button
+                      key={k}
+                      className={
+                        selected.has(k)
+                          ? `klank ${GROUP_CLASS[g.title]} is-on`
+                          : `klank ${GROUP_CLASS[g.title]}`
+                      }
+                      onClick={() => toggle(k)}
+                      aria-pressed={selected.has(k)}
+                    >
+                      {k}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </section>
 
-        {selected.size > 0 && words.length === 0 && (
-          <p className="empty">Nog geen woordjes met deze klanken. Kies er nog een paar.</p>
-        )}
+          <section className="results">
+            <h2 className="results-title">
+              {selected.size === 0
+                ? 'Kies eerst een paar klanken hierboven'
+                : `${words.length} woordje${words.length === 1 ? '' : 's'} om te lezen`}
+            </h2>
 
-        <ul className="word-list">
-          {words.map(({ word, klanken }) => (
-            <li key={word} className="word-card">
-              {klanken.map((k, i) => (
-                <span key={i} className={i % 2 === 0 ? 'klank-part' : 'klank-part is-alt'}>
-                  {k}
-                </span>
+            {selected.size > 0 && words.length === 0 && (
+              <p className="empty">Nog geen woordjes met deze klanken. Kies er nog een paar.</p>
+            )}
+
+            {words.length > 0 && (
+              <div className="oefenen-start">
+                <span className="oefenen-start-label">Oefen ze 1 voor 1:</span>
+                <div className="oefenen-start-knoppen">
+                  {oefenOpties.map((n) => (
+                    <button key={n} className="btn" onClick={() => startOefenen(n)}>
+                      {n === words.length ? `Alle ${n}` : n}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <ul className="word-list">
+              {words.map(({ word, klanken }) => (
+                <li key={word} className="word-card">
+                  <KlankenWoord klanken={klanken} />
+                </li>
               ))}
-            </li>
-          ))}
-        </ul>
-      </section>
+            </ul>
+          </section>
+        </>
+      )}
 
       <footer className="foot">
         <p>v{APP_VERSION}</p>
