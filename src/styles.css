@@ -42,10 +42,6 @@ body {
     padding-left: 2rem;
     padding-right: 2rem;
   }
-
-  .word-list {
-    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
-  }
 }
 
 .top {
@@ -457,25 +453,31 @@ body {
 }
 
 .word-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  display: flex;
   gap: 0.7rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0.2rem 0.2rem 0.7rem;
 }
 
 .word-card {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  flex-wrap: wrap;
-  padding: 0.9rem 0.4rem;
+  flex: 0 0 auto;
+  min-width: 6.5rem;
+  scroll-snap-align: start;
+  padding: 0.9rem 1rem;
   background: var(--paper);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   font-size: 1.7rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .klank-part {
