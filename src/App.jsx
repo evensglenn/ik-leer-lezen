@@ -94,10 +94,16 @@ function OefenKaart({ klanken, onDecision, triggerOordeel }) {
   const [sleep, setSleep] = useState({ x: 0, actief: false })
   const startX = useRef(0)
   const vertrokken = useRef(false)
+  // Het oordeel waarmee deze kaart is opgestart (bv. al ingevuld omdat je met
+  // "Vorige" terugging naar een woord dat al beoordeeld was) mag nooit
+  // vanzelf een nieuwe vlucht starten — enkel een ECHTE wijziging erna (een
+  // klik/swipe terwijl deze kaart al in beeld is) mag dat.
+  const laatstGezienOordeel = useRef(triggerOordeel)
 
   useEffect(() => {
-    if (triggerOordeel) {
-      vliegWeg(triggerOordeel)
+    if (triggerOordeel !== laatstGezienOordeel.current) {
+      laatstGezienOordeel.current = triggerOordeel
+      if (triggerOordeel) vliegWeg(triggerOordeel)
     }
   }, [triggerOordeel])
 
