@@ -389,36 +389,40 @@ export default function App() {
               </button>
             </div>
 
-            <label className="niveau-toggle">
-              <input
-                type="checkbox"
-                checked={geenClusters}
-                onChange={(e) => setGeenClusters(e.target.checked)}
-              />
-              <span>
-                Enkel eenvoudige woordjes <em>(geen "kl", "tr", "bakken", ...)</em>
-              </span>
-            </label>
-
             {KLANKEN_GROUPS.map((g) => (
-              <div key={g.title} className="klanken-group">
-                <h2>{g.title}</h2>
-                <div className="klanken-row">
-                  {g.klanken.map((k) => (
-                    <button
-                      key={k}
-                      className={
-                        selected.has(k)
-                          ? `klank ${GROUP_CLASS[g.title]} is-on`
-                          : `klank ${GROUP_CLASS[g.title]}`
-                      }
-                      onClick={() => toggle(k)}
-                      aria-pressed={selected.has(k)}
-                    >
-                      {KLANK_LABELS[k] ?? k}
-                    </button>
-                  ))}
+              <div key={g.title}>
+                <div className="klanken-group">
+                  <h2>{g.title}</h2>
+                  <div className="klanken-row">
+                    {g.klanken.map((k) => (
+                      <button
+                        key={k}
+                        className={
+                          selected.has(k)
+                            ? `klank ${GROUP_CLASS[g.title]} is-on`
+                            : `klank ${GROUP_CLASS[g.title]}`
+                        }
+                        onClick={() => toggle(k)}
+                        aria-pressed={selected.has(k)}
+                      >
+                        {KLANK_LABELS[k] ?? k}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
+                {g.title === 'Medeklinkers' && (
+                  <label className="niveau-toggle">
+                    <input
+                      type="checkbox"
+                      checked={geenClusters}
+                      onChange={(e) => setGeenClusters(e.target.checked)}
+                    />
+                    <span>
+                      Enkel eenvoudige woordjes <em>(geen "kl", "tr", "bakken", ...)</em>
+                    </span>
+                  </label>
+                )}
               </div>
             ))}
           </section>
