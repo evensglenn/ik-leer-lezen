@@ -99,7 +99,10 @@ const RUWE_WOORDEN = [
   // (o)
   'on', 'ok', 'kok', 'bok', 'dok', 'hok', 'lok', 'mok', 'rok', 'nok', 'jok',
   'brok', 'kon', 'ton', 'kop', 'stop', 'mos', 'pot', 'tot', 'bol', 'dol', 'hol',
-  'mol', 'wol', 'dom', 'log',
+  'mol', 'wol', 'dom', 'log', 'kook', 'look',
+
+  // (ee)
+  'keek',
 
   // (u)
   'duf', 'stuk', 'trek', 'vlak', 'vlek', 'krap', 'plak', 'geluk',
